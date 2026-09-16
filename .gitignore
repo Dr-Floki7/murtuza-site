@@ -13,10 +13,17 @@ _det.json
 My site flow.pdf
 UI & Skills.docx
 
-# raw clips before the all-keyframe re-encode. only scrub.mp4 ships.
-clip1.mp4
-clip2.mp4
-clip3.mp4
+# videos/ IS committed on purpose: those raw Flow clips are irreplaceable source
+# material, and build-assets.py needs them to rebuild scrub.mp4 from scratch.
+
+# build scratch
+_joined_*.mp4
+_concat_*.txt
+_cut_*.mp4
+_build.log
+_c_*.png
+_probe.js
+_track.js
 
 # OS
 Thumbs.db

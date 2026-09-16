@@ -21,14 +21,27 @@ const {chromium} = require('playwright');
   await p.goto('http://127.0.0.1:8099/index.html',{waitUntil:'load'});
   await p.waitForTimeout(600);
 
+  const read = async (sel) => {
+    const loc = p.locator(sel).first();
+    if (await loc.count() === 0) return null;
+    return {
+      sel,
+      box: await loc.boundingBox(),
+      color: await loc.evaluate(e => getComputedStyle(e).color),
+      size: await loc.evaluate(e => parseFloat(getComputedStyle(e).fontSize)),
+      // resolved weight: the variable-font axis wins over the `font-weight` keyword
+      weight: await loc.evaluate(e => {
+        const cs = getComputedStyle(e);
+        const m = /"wght"\s+(\d+)/.exec(cs.fontVariationSettings || '');
+        return m ? parseInt(m[1], 10) : parseInt(cs.fontWeight, 10) || 400;
+      }),
+    };
+  };
+
   const out = [];
-  // banner copy
   for (const sel of ['.banner h1','.banner h1 em','.banner__sub','.mark']) {
-    const box = await p.locator(sel).first().boundingBox();
-    const color = await p.locator(sel).first().evaluate(e => getComputedStyle(e).color);
-    const size  = await p.locator(sel).first().evaluate(e => parseFloat(getComputedStyle(e).fontSize));
-    const weight= await p.locator(sel).first().evaluate(e => getComputedStyle(e).fontVariationSettings);
-    out.push({sel, box, color, size, weight});
+    const r = await read(sel);
+    if (r) out.push(r);
   }
   await p.screenshot({path:'_c_banner.png'});
 
@@ -40,14 +53,8 @@ const {chromium} = require('playwright');
   await p.waitForTimeout(500);
   const panelOut = [];
   for (const sel of ['.panel[data-on] h2','.panel[data-on] p','.panel[data-on] .panel__year']) {
-    const loc = p.locator(sel).first();
-    if (await loc.count() === 0) continue;
-    panelOut.push({
-      sel,
-      box: await loc.boundingBox(),
-      color: await loc.evaluate(e => getComputedStyle(e).color),
-      size: await loc.evaluate(e => parseFloat(getComputedStyle(e).fontSize)),
-    });
+    const r = await read(sel);
+    if (r) panelOut.push(r);
   }
   await p.screenshot({path:'_c_film.png'});
 
@@ -113,8 +120,9 @@ for group, png in (("banner", "_c_banner.png"), ("film", "_c_film.png")):
         fg = parse_rgb(item["color"])
         bg = bg_behind(png, item["box"])
         r = ratio(fg, bg)
-        size = item["size"]
-        large = size >= 24 or size >= 18.66  # bold display type here is all >=18.66
+        size, weight = item["size"], item.get("weight", 400)
+        # WCAG "large scale": >=24px, or >=18.66px only when bold (>=700).
+        large = size >= 24 or (size >= 18.66 and weight >= 700)
         need = 3.0 if large else 4.5
         ok = r >= need
         worst = min(worst, r / need)
