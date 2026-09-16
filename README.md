@@ -29,41 +29,54 @@ scrubbing a standard encode stutters badly.
 `prefers-reduced-motion` skips scrubbing entirely: the clip loops quietly and all three stage
 panels render as a static stack.
 
-## Outstanding work
+## Live
 
-### 1. The hero clip
+**https://murtuza-bharmal.vercel.app**
 
-Not generated yet. The page runs on a lit gradient stage until `scrub.mp4` exists, which is a
-deliberate graceful degradation, not a bug.
+Verify a deploy with `python live-check.py`. It checks page *content*, not status codes: a Vercel
+login wall returns 200 for every path, including files that do not exist, so status codes alone
+prove nothing. That wall silently hid this site once already.
 
-Follow [`HERO_CLIP_PROMPTS.md`](HERO_CLIP_PROMPTS.md). It has the three shot prompts, hard framing
-specs, and the identity block from `murtaza_character_profile/`. Produce `clip1.mp4`, `clip2.mp4`,
-`clip3.mp4` in this directory.
+Deployment Protection must stay **disabled** for the site to be publicly reachable.
 
-Then concatenate and re-encode:
+## Rebuilding the assets
+
+Raw Flow output lives in `Videos/` and is committed on purpose — it is irreplaceable source
+material. To rebuild everything the page serves:
 
 ```bash
-# ffmpeg is not installed yet:  winget install Gyan.FFmpeg
-printf "file 'clip1.mp4'\nfile 'clip2.mp4'\nfile 'clip3.mp4'\n" > concat.txt
-ffmpeg -f concat -safe 0 -i concat.txt -c copy joined.mp4
-
-ffmpeg -i joined.mp4 -an -vf "scale=1280:-2,fps=30" -c:v libx264 -preset slow -crf 20 \
-  -x264-params "keyint=1:min-keyint=1:scenecut=0" -movflags +faststart scrub.mp4
-
-# social preview image, pulled from the final frame of the last stage
-ffmpeg -sseof -0.5 -i scrub.mp4 -vframes 1 -vf "scale=1200:630:force_original_aspect_ratio=increase,crop=1200:630" og-cover.jpg
+winget install Gyan.FFmpeg     # if not already present
+python build-assets.py
 ```
 
-Then recalibrate against the real file: the stage bands in `panelFor()`, `object-position` on
-`.act__video`, the `.act` height against real duration, and the scrim positions against where the
-light actually falls.
+That concatenates in reverse-chronological order, encodes all-keyframe inside a 24 MB budget
+(Cloudflare Pages caps single files at 25 MiB, so staying under keeps that host an option),
+produces both landscape and portrait cuts, generates `banner.webp` / `banner.jpg` / `og-cover.jpg`,
+and prints the stage boundaries as scroll fractions.
 
-### 2. Swap the domain placeholder
+If clip durations change, update the bands in `panelFor()` in `index.html` to the fractions the
+script prints. Current cut: real estate 0.00–8.00s, electronics 8.00–16.00s, clinical 16.00–22.04s.
 
-`murtuza-bharmal.vercel.app` appears in `index.html` (15×), `robots.txt`, `sitemap.xml` and `llms.txt`. Replace all
-of them once the real domain is known.
+Portrait viewports are served `scrub-portrait.mp4`, chosen in JS at load. Not via `<source media>`,
+whose `media` attribute is evaluated only once and is unevenly supported.
 
-### 3. Wire the voice agent
+## Engagement tracking
+
+Vercel Web Analytics: cookieless, ~1KB, no consent banner required. Hobby includes 50K
+events/month and pauses collection rather than billing when exceeded.
+
+Conversions (`cv_download`, `email_click`, `linkedin_click`) fire immediately. Everything else is
+batched into a single `visit_summary` event at end of visit, so a visit costs roughly two events
+rather than a dozen. The summary reports which section held attention longest, total engaged time,
+max scroll depth, how far into the film the visitor reached, and viewport orientation — all
+bucketed, which keeps distinct-value counts low and avoids anything resembling a fingerprint.
+
+A hidden tab does not accrue time. `pagehide` is used rather than `unload`, which would disqualify
+the page from the browser's back/forward cache.
+
+## Outstanding work
+
+### Wire the voice agent
 
 `#agent-mount` in `index.html` is the slot. Use a hosted provider (ElevenLabs Agents, Vapi, Retell)
 with a domain-locked public embed ID.

@@ -11,6 +11,10 @@
 
 <link rel="preload" href="fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
 
+<!-- Marks that JS is available, so CSS can hide the banner copy for its scroll reveal.
+     Without this the copy would stay hidden forever if the script failed. -->
+<script>document.documentElement.classList.add("js");</script>
+
 <!-- Vercel Web Analytics: cookieless, no personal data, ~1KB. Resolves only on
      Vercel, so it 404s harmlessly during local development. -->
 <script defer src="/_vercel/insights/script.js"></script>
@@ -100,45 +104,6 @@
         "@type": "Demand",
         "name": "Product marketing and go-to-market roles in healthcare, medtech and healthtech"
       }
-    },
-    {
-      "@type": "FAQPage",
-      "@id": "https://murtuza-bharmal.vercel.app/#faq",
-      "isPartOf": { "@id": "https://murtuza-bharmal.vercel.app/#page" },
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Why did a dentist move into product marketing?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Clinical practice is a decision funnel. Patients weigh an expensive, irreversible choice, delay it, and eventually act. After a Bachelor of Dental Surgery and two years of general practice and community health camps, an MBA in Marketing turned that first-hand understanding of how people decide into a commercial skill set."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Which sectors has Murtuza Bharmal launched products in?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Three. Real estate, owning go-to-market for a slate of residential launches. Consumer electronics, at Xiaomi India, covering smartphone, smart TV and AIoT launches across an exclusive retail channel. Healthcare, through clinical practice and community outreach."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "What kind of role is Murtuza Bharmal looking for?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Product marketing and go-to-market roles in healthcare, medtech and healthtech, where clinical background and launch experience are both useful. That combination is the point: most product marketers entering healthtech have the commercial half and have researched the clinical half."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is Murtuza Bharmal available for consulting or advisory work?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes, for launch and go-to-market advisory alongside a full-time search. Typical scope is positioning, launch planning, channel rollout, and CRM or funnel work. Email is the fastest route."
-          }
-        }
-      ]
     }
   ]
 }
@@ -262,36 +227,47 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
 /* ═══════════════════════════════════════════════════════════
    BANNER — static, paints immediately, no video dependency
    ═══════════════════════════════════════════════════════════ */
+/* Two beats. First the photograph alone, so it lands. Then the headline writes itself
+   on over the same image, and the veil below darkens only as far as the text needs. */
 .banner{
   position:relative;
-  min-height:100svh;
-  display:grid;
+  height:200vh;
+  background:var(--ink);
+}
+.banner__stage{
+  position:sticky;top:0;
+  height:100vh;height:100svh;
+  overflow:hidden;
   background:
     radial-gradient(64% 48% at 50% 30%,rgba(196,214,242,.15),transparent 72%),
     var(--ink);
   color:var(--on-ink);
-  overflow:hidden;
 }
 .banner__img{
   position:absolute;inset:0;
   width:100%;height:100%;
   object-fit:cover;
-  object-position:center 28%;   /* holds the faces on a portrait crop */
+  object-position:center 26%;   /* holds the faces on a portrait crop */
   opacity:0;transition:opacity 1s ease;
 }
 .banner__img.is-in{opacity:1}
-/* Scrim tuned against the real photograph, not a placeholder: the white clinical coat
-   sits lower-left, exactly under the headline and CTA, so this has to carry real weight. */
-.banner::after{
+/* base scrim: only enough to keep the name mark legible. The image stays punchy. */
+.banner__stage::after{
   content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
   background:
-    linear-gradient(to top,
-      var(--ink) 0%,rgba(10,14,20,.97) 20%,rgba(10,14,20,.90) 38%,
-      rgba(10,14,20,.62) 56%,rgba(10,14,20,.22) 74%,transparent 88%),
-    linear-gradient(to bottom,rgba(10,14,20,.70) 0%,transparent 26%);
+    linear-gradient(to bottom,rgba(10,14,20,.70) 0%,transparent 24%),
+    linear-gradient(to top,rgba(10,14,20,.55) 0%,transparent 22%);
+}
+/* the veil arrives with the copy. Heavy, because the white clinical coat sits
+   lower-left, exactly under the headline and CTA. */
+.banner__veil{
+  position:absolute;inset:0;z-index:3;pointer-events:none;opacity:1;
+  background:linear-gradient(to top,
+    var(--ink) 0%,rgba(10,14,20,.97) 20%,rgba(10,14,20,.90) 38%,
+    rgba(10,14,20,.62) 56%,rgba(10,14,20,.22) 74%,transparent 88%);
 }
 .banner__ui{
-  position:relative;z-index:3;
+  position:absolute;inset:0;z-index:4;
   display:grid;grid-template-rows:auto 1fr auto;
   width:100%;max-width:var(--maxw);margin-inline:auto;
   padding-inline:var(--gutter);
@@ -307,12 +283,21 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
 .mark span{color:var(--on-ink-2)}
 
 .banner__body{grid-row:3;max-width:min(52rem,100%)}
+/* Hidden only when JS is there to reveal it. Without JS the copy simply shows. */
+.js .banner__body{opacity:0;transform:translateY(1.5rem);will-change:opacity,transform}
+.js .banner__veil{opacity:0}
 .banner h1{margin-bottom:var(--s-3);max-width:24ch}
 /* let the second line fill before it breaks; balance splits it early at wide sizes */
 .banner h1 em{font-style:normal;color:var(--signal-lift);display:block;text-wrap:normal}
 .banner__sub{
   font-size:var(--t-md);color:var(--on-ink-2);
   max-width:44ch;margin-bottom:var(--s-4);
+}
+/* The first-beat cue sits on its own, centred low, and leaves as the copy arrives. */
+.banner__cue{
+  grid-row:3;justify-self:start;align-self:end;
+  display:flex;align-items:center;gap:.7em;
+  color:var(--on-ink-2);pointer-events:none;
 }
 .cue{
   margin-top:var(--s-4);
@@ -472,30 +457,6 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
 .panel p{font-size:var(--t-md);color:var(--on-ink-2);max-width:40ch}
 
 /* ═══════════════════════════════════════════════════════════
-   AGENT SLOT
-   ═══════════════════════════════════════════════════════════ */
-.agent{
-  margin-top:var(--s-5);
-  border:1px solid var(--rule-paper);
-  padding:var(--s-4);
-  background:var(--paper-lift);
-  max-width:56rem;
-}
-.agent h2{
-  font-size:var(--t-lg);
-  font-variation-settings:"wdth" 108,"wght" 720;
-  letter-spacing:-.03em;margin-bottom:var(--s-2);
-}
-.agent p{color:var(--on-paper-2);max-width:56ch}
-#agent-mount{margin-top:var(--s-3)}
-#agent-mount:empty::after{
-  content:"Not connected yet.";
-  display:block;padding:var(--s-3);
-  border:1px dashed var(--rule-paper);
-  color:var(--on-paper-2);font-size:var(--t-sm);
-}
-
-/* ═══════════════════════════════════════════════════════════
    CLOSE — the signal owns this whole region
    ═══════════════════════════════════════════════════════════ */
 .close{background:var(--signal);color:#fff;padding-block:var(--s-6)}
@@ -518,12 +479,134 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
 .foot a:hover{color:var(--on-ink);border-bottom-color:var(--signal-lift)}
 
 /* ═══════════════════════════════════════════════════════════
+   CREDENTIALS — hairline grid, drawn icons, no cards
+   ═══════════════════════════════════════════════════════════ */
+.creds{
+  margin-top:var(--s-5);
+  display:grid;gap:var(--s-4);
+  grid-template-columns:1fr;
+}
+@media (min-width:44rem){.creds{grid-template-columns:repeat(3,1fr);gap:var(--s-5)}}
+.cred{
+  border-top:1px solid var(--rule-paper);
+  padding-top:var(--s-3);
+  display:grid;gap:.3rem;align-content:start;
+}
+.cred__icon{
+  display:block;width:clamp(2.25rem,1.8rem + 1.4vw,3rem);
+  color:var(--signal);margin-bottom:var(--s-2);
+}
+.cred__icon svg{width:100%;height:auto;overflow:visible}
+.cred__when{color:var(--on-paper-2)}
+.cred h3{
+  font-size:var(--t-md);
+  font-variation-settings:"wdth" 106,"wght" 720;
+  letter-spacing:-.025em;
+}
+.cred__where{color:var(--on-paper-2);font-size:var(--t-base)}
+
+/* ═══════════════════════════════════════════════════════════
+   TICKER — the one perpetually moving element on the page
+   ═══════════════════════════════════════════════════════════ */
+.ticker{
+  --gap:clamp(1.25rem,3.5vw,3rem);
+  overflow:hidden;                /* keeps max-content off the page's scroll width */
+  border-block:1px solid var(--rule-paper);
+  background:var(--paper-lift);
+  padding-block:var(--s-3);
+}
+.ticker__track{
+  display:flex;width:max-content;gap:var(--gap);
+  animation:ticker-slide 42s linear infinite;
+}
+.ticker:hover .ticker__track,
+.ticker:focus-within .ticker__track{animation-play-state:paused}
+.ticker__group{
+  display:flex;align-items:center;gap:var(--gap);
+  padding-right:var(--gap);
+  font-size:var(--t-lg);
+  font-variation-settings:"wdth" 110,"wght" 700;
+  letter-spacing:-.03em;white-space:nowrap;
+}
+.ticker__group i{font-style:normal;color:var(--signal);opacity:.55}
+@keyframes ticker-slide{to{transform:translateX(-50%)}}
+
+/* ═══════════════════════════════════════════════════════════
+   MOTION — varied on purpose. One identical entrance on every
+   section is the tell that nobody made a decision.
+   ═══════════════════════════════════════════════════════════ */
+
+/* headings wipe up under their own edge rather than fading */
+.js .reveal-lines{
+  clip-path:inset(0 0 105% 0);
+  transform:translateY(.32em);
+  transition:clip-path 1s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1);
+}
+.js .reveal-lines.in{clip-path:inset(-20% 0 -20% 0);transform:none}
+
+/* body copy arrives a word at a time, so the sentence reads as it lands */
+.js .w{
+  display:inline-block;
+  opacity:0;transform:translateY(.5em);
+  transition:opacity .45s ease,transform .55s cubic-bezier(.16,1,.3,1);
+  transition-delay:calc(var(--wd,0) * 26ms);
+}
+.js .in .w{opacity:1;transform:none}
+
+/* experience rows: the rule draws itself, then the content follows it in */
+.rows .row{border-bottom:none;position:relative}
+.rows .row::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:var(--rule-paper);
+}
+.js .rows .row::after{
+  transform:scaleX(0);transform-origin:left;
+  transition:transform 1.1s cubic-bezier(.16,1,.3,1);
+}
+.js .rows .row.in::after{transform:scaleX(1)}
+.js .rows .row .row__when,
+.js .rows .row .row__body{
+  opacity:0;transform:translateY(1rem);
+  transition:opacity .7s ease,transform .8s cubic-bezier(.16,1,.3,1);
+}
+.js .rows .row.in .row__when{opacity:1;transform:none}
+.js .rows .row.in .row__body{opacity:1;transform:none;transition-delay:.1s}
+
+/* skills and credentials count themselves in */
+.js [data-stagger]{
+  opacity:0;transform:translateY(1.1rem);
+  transition:opacity .55s ease,transform .65s cubic-bezier(.16,1,.3,1);
+  transition-delay:calc(var(--i,0) * 55ms);
+}
+.js [data-stagger].in{opacity:1;transform:none}
+
+/* the credential icons draw their own strokes. pathLength="1" on every child
+   normalises the dash maths across shapes of very different real lengths. */
+.js .cred__icon svg > *{
+  stroke-dasharray:1;stroke-dashoffset:1;
+  transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1) .18s;
+}
+.js .cred.in .cred__icon svg > *{stroke-dashoffset:0}
+
+/* the closing band lifts as it enters, so the page ends on a rise */
+.js .close .wrap{
+  opacity:0;transform:translateY(1.75rem);
+  transition:opacity .8s ease,transform .9s cubic-bezier(.16,1,.3,1);
+}
+.js .close.in .wrap{opacity:1;transform:none}
+
+/* ═══════════════════════════════════════════════════════════
    REDUCED MOTION — no scrub at all, every stage readable
    ═══════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
   .banner__img{opacity:1}
+  /* no two-beat reveal: one screen, image and copy together */
+  .banner{height:auto}
+  .banner__stage{position:relative;height:auto;min-height:min(92svh,46rem)}
+  .banner__ui{position:relative;inset:auto;min-height:min(92svh,46rem)}
+  .banner__cue{display:none}
   .act{height:auto}
   .act__stage{position:relative;height:auto;min-height:min(88svh,44rem)}
   .act__ui{position:relative;inset:auto;min-height:min(88svh,44rem)}
@@ -532,16 +615,35 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
   .panels{display:grid;gap:var(--s-4)}
   .panel{opacity:1;visibility:visible;position:static!important;inset:auto!important}
   .panel + .panel{position:static}
+
+  /* every entrance resolves to its finished state, nothing animates in */
+  .js .reveal-lines{clip-path:none;transform:none}
+  .js .w{opacity:1;transform:none}
+  .js .rows .row::after{transform:scaleX(1)}
+  .js .rows .row .row__when,
+  .js .rows .row .row__body{opacity:1;transform:none}
+  .js [data-stagger]{opacity:1;transform:none}
+  .js .cred__icon svg > *{stroke-dashoffset:0}
+  .js .close .wrap{opacity:1;transform:none}
+  /* the ticker stops rather than scrolling forever */
+  .ticker__track{animation:none;width:auto;flex-wrap:wrap}
+  .ticker__group:nth-child(2){display:none}
 }
 
-/* short-and-wide, e.g. landscape phone ~740×360 */
-@media (max-height:30rem) and (orientation:landscape){
+/* Short viewports: a laptop window at ~1024x455, or a landscape phone. The copy block
+   has to fit inside the stage without crowding the photograph, so the display shrinks
+   against viewport height rather than width. */
+@media (max-height:34rem){
   .banner__ui,.act__ui{padding-block:var(--s-2)}
-  .display{font-size:clamp(1.5rem,7.5vh,2.5rem)}
-  .banner__sub,.panel p{font-size:var(--t-base);max-width:34ch;margin-bottom:var(--s-2)}
+  .display{font-size:clamp(1.5rem,6.4vh + .4rem,2.75rem)}
+  /* stays at --t-base: 16px is the floor for body copy, so space is saved by
+     shortening the measure and tightening margins, not by shrinking the text */
+  .banner__sub,.panel p{font-size:var(--t-base);max-width:52ch;margin-bottom:var(--s-2)}
+  .banner__sub{line-height:1.45}
   .banner h1{margin-bottom:var(--s-2)}
+  .banner__body{max-width:min(40rem,100%)}
   .panel h2{font-size:var(--t-md)}
-  .cue{display:none}
+  .cue,.banner__cue{display:none}
   .btn{min-height:2.75rem;padding:.6rem 1.1rem}
 }
 </style>
@@ -553,35 +655,40 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
 <!-- ═══════════════════════════════════════════════════════
      BANNER
      ═══════════════════════════════════════════════════════ -->
-<header class="banner on-ink" data-track="banner">
-  <picture>
-    <source srcset="banner.webp" type="image/webp">
-    <img class="banner__img" id="banner-img"
-         src="banner.jpg"
-         alt="Three versions of Murtuza Bharmal in one frame: centre, in a navy blazer, looking directly ahead; to his left the same man in a white clinical coat; to his right the same man in a polo shirt holding a phone."
-         fetchpriority="high" decoding="async" width="2560" height="1440">
-  </picture>
+<header class="banner on-ink" id="banner" data-track="banner">
+  <div class="banner__stage">
+    <picture>
+      <source srcset="banner.webp" type="image/webp">
+      <img class="banner__img" id="banner-img"
+           src="banner.jpg"
+           alt="Three versions of Murtuza Bharmal in one frame: centre, in a navy blazer, looking directly ahead; to his left the same man in a white clinical coat; to his right the same man in a polo shirt holding a phone."
+           fetchpriority="high" decoding="async" width="2560" height="1440">
+    </picture>
 
-  <div class="banner__ui">
-    <p class="mark">Murtuza Bharmal <span>· GTM &amp; Product Marketing</span></p>
+    <div class="banner__veil" id="banner-veil" aria-hidden="true"></div>
 
-    <div class="banner__body">
-      <h1 class="display">Three industries.<em>One way of thinking.</em></h1>
-      <p class="banner__sub">
-        Go-to-market and product marketing. Five-plus years of launches across real
-        estate and consumer electronics, on top of a clinical career most marketers
-        have only read about.
-      </p>
-      <div class="actions">
-        <a class="btn btn--fill" href="Murtuza_Bharmal_Resume_HT.pdf" download>
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-            <path d="M8 1.6v9M4.4 7.4 8 11l3.6-3.6M2 13.4h12"/>
-          </svg>
-          Download CV
-        </a>
-        <a class="btn btn--line" href="#contact">Get in touch</a>
+    <div class="banner__ui">
+      <p class="mark">Murtuza Bharmal <span>· GTM &amp; Product Marketing</span></p>
+
+      <div class="banner__body" id="banner-copy">
+        <h1 class="display">Three industries.<em>One way of thinking.</em></h1>
+        <p class="banner__sub">
+          Go-to-market and product marketing. Five-plus years of launches across real
+          estate and consumer electronics, on top of a clinical career most marketers
+          have only read about.
+        </p>
+        <div class="actions">
+          <a class="btn btn--fill" href="Murtuza_Bharmal_Resume_HT.pdf" download>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M8 1.6v9M4.4 7.4 8 11l3.6-3.6M2 13.4h12"/>
+            </svg>
+            Download CV
+          </a>
+          <a class="btn btn--line" href="#contact">Get in touch</a>
+        </div>
       </div>
-      <p class="cue label"><i></i> Scroll</p>
+
+      <p class="banner__cue label" id="banner-cue"><i></i> Scroll</p>
     </div>
   </div>
 </header>
@@ -591,14 +698,38 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
 
   <section class="sheet sheet--tight on-paper" aria-labelledby="thesis-h" data-track="intro">
     <div class="wrap">
-      <h2 class="lead" id="thesis-h">I did not start in marketing.</h2>
-      <p class="lead-body">
+      <h2 class="lead reveal-lines" id="thesis-h">I did not start in marketing.</h2>
+      <p class="lead-body" data-words>
         I started in a dental clinic, watching people weigh a decision they could not
         undo. Then an MBA, then national product launches, then owning go-to-market
         end to end. Same funnel every time, drawn on a different whiteboard.
       </p>
     </div>
   </section>
+
+  <!-- the one perpetually moving element: keeps the page alive between beats -->
+  <div class="ticker on-paper" aria-hidden="true">
+    <div class="ticker__track">
+      <div class="ticker__group">
+        <span>Go-to-market</span> <i>◆</i>
+        <span>Product launches</span> <i>◆</i>
+        <span>Positioning</span> <i>◆</i>
+        <span>Demand generation</span> <i>◆</i>
+        <span>CRM &amp; funnel</span> <i>◆</i>
+        <span>Pricing strategy</span> <i>◆</i>
+        <span>Sales enablement</span> <i>◆</i>
+      </div>
+      <div class="ticker__group">
+        <span>Go-to-market</span> <i>◆</i>
+        <span>Product launches</span> <i>◆</i>
+        <span>Positioning</span> <i>◆</i>
+        <span>Demand generation</span> <i>◆</i>
+        <span>CRM &amp; funnel</span> <i>◆</i>
+        <span>Pricing strategy</span> <i>◆</i>
+        <span>Sales enablement</span> <i>◆</i>
+      </div>
+    </div>
+  </div>
 
   <!-- lights down -->
   <section class="act on-ink" id="act" data-track="film"
@@ -650,8 +781,8 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
 
   <section class="sheet on-paper" aria-labelledby="arc-h" data-track="experience">
     <div class="wrap">
-      <h2 class="lead" id="arc-h">The detail.</h2>
-      <p class="lead-body">
+      <h2 class="lead reveal-lines" id="arc-h">The detail.</h2>
+      <p class="lead-body" data-words>
         Clinical practice taught me how people weigh a decision they cannot undo.
         Consumer electronics taught me how to launch at national scale on a fixed date.
         Real estate taught me how to sell something a family thinks about for months.
@@ -662,7 +793,7 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
           <p class="row__when label">2025 — now</p>
           <div class="row__body">
             <h3>Go-To-Market Manager</h3>
-            <p class="row__where">An India real estate developer</p>
+            <p class="row__where">Flow Realty</p>
             <p>
               End-to-end go-to-market for a slate of residential launches: positioning,
               launch timelines, and rollout across digital, ATL, BTL and channel-partner
@@ -731,137 +862,84 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
 
   <section class="sheet on-paper" aria-labelledby="cap-h" data-track="skills">
     <div class="wrap">
-      <h2 class="lead" id="cap-h">What I do.</h2>
-      <p class="lead-body">
+      <h2 class="lead reveal-lines" id="cap-h">What I do.</h2>
+      <p class="lead-body" data-words>
         Strategy that survives contact with a launch calendar, and the operational
         detail to ship it on the date it was promised.
       </p>
       <ul class="index">
-        <li>Go-to-market strategy</li>
-        <li>Product positioning</li>
-        <li>Product launches</li>
-        <li>Market research</li>
-        <li>ICP &amp; segmentation</li>
-        <li>Competitor benchmarking</li>
-        <li>Demand generation</li>
-        <li>Full-funnel performance</li>
-        <li>CRM &amp; marketing automation</li>
-        <li>Budget ownership</li>
-        <li>Pricing strategy</li>
-        <li>Sales enablement</li>
-        <li>Digital marketing</li>
-        <li>Google Ads &amp; Analytics</li>
-        <li>ATL &amp; BTL activations</li>
-        <li>OOH &amp; on-ground branding</li>
-        <li>Event planning &amp; execution</li>
-        <li>Vendor management &amp; negotiation</li>
-        <li>Cross-functional leadership</li>
-        <li>AI-led engagement</li>
+        <li data-stagger>Go-to-market strategy</li>
+        <li data-stagger>Product positioning</li>
+        <li data-stagger>Product launches</li>
+        <li data-stagger>Market research</li>
+        <li data-stagger>ICP &amp; segmentation</li>
+        <li data-stagger>Competitor benchmarking</li>
+        <li data-stagger>Demand generation</li>
+        <li data-stagger>Full-funnel performance</li>
+        <li data-stagger>CRM &amp; marketing automation</li>
+        <li data-stagger>Budget ownership</li>
+        <li data-stagger>Pricing strategy</li>
+        <li data-stagger>Sales enablement</li>
+        <li data-stagger>Digital marketing</li>
+        <li data-stagger>Google Ads &amp; Analytics</li>
+        <li data-stagger>ATL &amp; BTL activations</li>
+        <li data-stagger>OOH &amp; on-ground branding</li>
+        <li data-stagger>Event planning &amp; execution</li>
+        <li data-stagger>Vendor management &amp; negotiation</li>
+        <li data-stagger>Cross-functional leadership</li>
+        <li data-stagger>AI-led engagement</li>
       </ul>
     </div>
   </section>
 
   <section class="sheet on-paper" aria-labelledby="cred-h" data-track="credentials">
     <div class="wrap">
-      <h2 class="lead" id="cred-h">Credentials.</h2>
-      <div class="rows">
-        <article class="row">
-          <p class="row__when label">2020 — 2022</p>
-          <div class="row__body">
-            <h3>MBA, Marketing</h3>
-            <p class="row__where">Nirma University</p>
-          </div>
-        </article>
-        <article class="row">
-          <p class="row__when label">2013 — 2018</p>
-          <div class="row__body">
-            <h3>Bachelor of Dental Surgery</h3>
-            <p class="row__where">AMC Dental College &amp; Hospital</p>
-          </div>
-        </article>
-        <article class="row">
-          <p class="row__when label">Awards</p>
-          <div class="row__body">
-            <h3>Performance Excellence Award</h3>
-            <p class="row__where">Three consecutive quarters</p>
-            <ul>
-              <li>Special recognition from the Head of Retail, Diwali 2023 campaign</li>
-            </ul>
-          </div>
-        </article>
-        <article class="row">
-          <p class="row__when label">Certified</p>
-          <div class="row__body">
-            <h3>Google</h3>
-            <p class="row__where">Fundamentals of Digital Marketing · Google Analytics</p>
-          </div>
-        </article>
-      </div>
+      <h2 class="lead reveal-lines" id="cred-h">Credentials.</h2>
 
-      <div class="agent">
-        <h2>Ask instead of reading.</h2>
-        <p>
-          An agent trained on this background, and only this background. It answers
-          questions about my experience, sectors and skills, and declines everything else.
-        </p>
-        <div id="agent-mount"></div>
-      </div>
-    </div>
-  </section>
+      <ul class="creds">
+        <li class="cred" data-stagger>
+          <span class="cred__icon" aria-hidden="true">
+            <!-- mortarboard -->
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 6 3 12l13 6 13-6-13-6Z" pathLength="1"/>
+              <path d="M8 15v6c0 2.2 3.6 4 8 4s8-1.8 8-4v-6" pathLength="1"/>
+              <path d="M29 12v7" pathLength="1"/>
+            </svg>
+          </span>
+          <p class="cred__when label">2020 — 2022</p>
+          <h3>MBA, Marketing</h3>
+          <p class="cred__where">Nirma University</p>
+        </li>
 
-  <section class="sheet on-paper" id="questions" aria-labelledby="faq-h" data-track="faq">
-    <div class="wrap">
-      <h2 class="lead" id="faq-h">The obvious questions.</h2>
-      <div class="rows">
-        <article class="row">
-          <p class="row__when label">Q</p>
-          <div class="row__body">
-            <h3>Why did a dentist move into product marketing?</h3>
-            <p>
-              Clinical practice is a decision funnel. Patients weigh an expensive,
-              irreversible choice, delay it, and eventually act. After a Bachelor of Dental
-              Surgery and two years of general practice and community health camps, an MBA in
-              Marketing turned that first-hand understanding of how people decide into a
-              commercial skill set.
-            </p>
-          </div>
-        </article>
-        <article class="row">
-          <p class="row__when label">Q</p>
-          <div class="row__body">
-            <h3>Which sectors have you launched products in?</h3>
-            <p>
-              Three. Real estate, owning go-to-market for a slate of residential launches.
-              Consumer electronics, at Xiaomi India, covering smartphone, smart TV and AIoT
-              launches across an exclusive retail channel. Healthcare, through clinical
-              practice and community outreach.
-            </p>
-          </div>
-        </article>
-        <article class="row">
-          <p class="row__when label">Q</p>
-          <div class="row__body">
-            <h3>What kind of role are you looking for?</h3>
-            <p>
-              Product marketing and go-to-market roles in healthcare, medtech and healthtech,
-              where the clinical background and the launch experience are both useful. That
-              combination is the point: most product marketers entering healthtech have the
-              commercial half and have researched the clinical half.
-            </p>
-          </div>
-        </article>
-        <article class="row">
-          <p class="row__when label">Q</p>
-          <div class="row__body">
-            <h3>Are you available for consulting or advisory work?</h3>
-            <p>
-              Yes, for launch and go-to-market advisory alongside a full-time search. Typical
-              scope is positioning, launch planning, channel rollout, and CRM or funnel work.
-              Email is the fastest route.
-            </p>
-          </div>
-        </article>
-      </div>
+        <li class="cred" data-stagger>
+          <span class="cred__icon" aria-hidden="true">
+            <!-- tooth -->
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 5c-2.4 0-3.4 1.3-6 1.3C7.6 6.3 6 8.4 6 11.6c0 3.4 1.4 5.3 2.2 8.2.7 2.7.6 7.2 2.9 7.2 2 0 2.1-3.6 2.6-6.1.3-1.6.8-2.6 2.3-2.6s2 1 2.3 2.6c.5 2.5.6 6.1 2.6 6.1 2.3 0 2.2-4.5 2.9-7.2.8-2.9 2.2-4.8 2.2-8.2 0-3.2-1.6-5.3-4-5.3-2.6 0-3.6-1.3-6-1.3Z" pathLength="1"/>
+            </svg>
+          </span>
+          <p class="cred__when label">2013 — 2018</p>
+          <h3>Bachelor of Dental Surgery</h3>
+          <p class="cred__where">AMC Dental College &amp; Hospital</p>
+        </li>
+
+        <li class="cred" data-stagger>
+          <span class="cred__icon" aria-hidden="true">
+            <!-- certificate rosette -->
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="16" cy="13" r="8" pathLength="1"/>
+              <path d="M16 9.4l1.6 3.2 3.4.5-2.5 2.4.6 3.5-3.1-1.7-3.1 1.7.6-3.5-2.5-2.4 3.4-.5L16 9.4Z" pathLength="1"/>
+              <path d="M11 20.4 9 29l7-3 7 3-2-8.6" pathLength="1"/>
+            </svg>
+          </span>
+          <p class="cred__when label">Certified</p>
+          <h3>Google</h3>
+          <p class="cred__where">Digital Marketing Fundamentals · Analytics</p>
+        </li>
+      </ul>
     </div>
   </section>
 
@@ -903,12 +981,134 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   document.getElementById("yr").textContent = new Date().getFullYear();
 
+  /* ══════════════════════════════════════════════════════
+     REVEALS — varied by element type on purpose. Headings wipe,
+     body copy lands word by word, rules draw, lists count in.
+     ══════════════════════════════════════════════════════ */
+  (function(){
+    /* Split paragraphs into words first, so the spans exist before observing.
+       Only plain-text paragraphs: anything with child markup is left alone. */
+    document.querySelectorAll("[data-words]").forEach(function(el){
+      if (el.children.length) return;
+      var words = el.textContent.trim().split(/\s+/);
+      el.textContent = "";
+      words.forEach(function(w, i){
+        var span = document.createElement("span");
+        span.className = "w";
+        span.style.setProperty("--wd", i);
+        span.textContent = w;
+        el.appendChild(span);
+        if (i < words.length - 1) el.appendChild(document.createTextNode(" "));
+      });
+    });
+
+    /* index-in-parent for staggered groups */
+    document.querySelectorAll(".index, .creds").forEach(function(group){
+      Array.prototype.forEach.call(group.children, function(child, i){
+        child.style.setProperty("--i", i);
+      });
+    });
+
+    var pending = Array.prototype.slice.call(document.querySelectorAll(
+      ".reveal-lines, [data-words], .rows .row, [data-stagger], .close"
+    ));
+
+    if (reduced || !("IntersectionObserver" in window)) {
+      pending.forEach(function(t){ t.classList.add("in"); });
+      return;
+    }
+
+    function show(el){
+      if (el.classList.contains("in")) return;
+      el.classList.add("in");
+      io.unobserve(el);                  // reveals are one-way, never re-trigger
+      var i = pending.indexOf(el);
+      if (i > -1) pending.splice(i, 1);
+    }
+
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        /* Reveal on entry, but ALSO if the element has already gone past. Observer
+           callbacks are async: on a fast flick or an anchor jump the callback can
+           arrive after the element left the viewport, reporting isIntersecting
+           false. Bailing there would leave that content permanently invisible. */
+        if (e.isIntersecting || e.boundingClientRect.bottom <= 0) show(e.target);
+      });
+    }, { rootMargin: "0px 0px -12% 0px", threshold: 0.15 });
+
+    pending.forEach(function(t){ io.observe(t); });
+
+    /* Safety sweep: anything whose top has passed the fold gets revealed, whatever
+       the observer did or did not report. Cost falls to zero as items resolve. */
+    var sweeping = false;
+    function sweep(){
+      sweeping = false;
+      if (!pending.length) {
+        window.removeEventListener("scroll", queueSweep);
+        return;
+      }
+      var limit = window.innerHeight * 0.9;
+      pending.slice().forEach(function(el){
+        if (el.getBoundingClientRect().top < limit) show(el);
+      });
+    }
+    function queueSweep(){
+      if (sweeping) return;
+      sweeping = true;
+      requestAnimationFrame(sweep);
+    }
+    window.addEventListener("scroll", queueSweep, { passive:true });
+    window.addEventListener("resize", queueSweep);
+    queueSweep();
+  })();
+
   /* ── Banner: fade in once decoded. Missing file keeps the lit gradient. ── */
   var bannerImg = document.getElementById("banner-img");
   function showBanner(){ bannerImg.classList.add("is-in"); }
   if (bannerImg.complete && bannerImg.naturalWidth > 0) showBanner();
   bannerImg.addEventListener("load", showBanner);
   bannerImg.addEventListener("error", function(){ bannerImg.remove(); });
+
+  /* ── Banner reveal: beat one is the photograph alone, beat two writes the
+        headline on over it. Copy and veil arrive together, so the image only
+        darkens as far as the text actually needs. ── */
+  (function(){
+    var banner = document.getElementById("banner");
+    var copy   = document.getElementById("banner-copy");
+    var veil   = document.getElementById("banner-veil");
+    var cue    = document.getElementById("banner-cue");
+    if (!banner || !copy) return;
+
+    if (reduced) {                        // no reveal: show everything at rest
+      copy.style.opacity = "1";
+      copy.style.transform = "none";
+      veil.style.opacity = "1";
+      cue.style.display = "none";
+      return;
+    }
+
+    var REVEAL_FROM = 0.18, REVEAL_TO = 0.52;
+
+    function frame(){
+      var span = banner.offsetHeight - window.innerHeight;
+      var p = span <= 0 ? 1
+        : Math.min(1, Math.max(0, -banner.getBoundingClientRect().top / span));
+
+      var t = Math.min(1, Math.max(0, (p - REVEAL_FROM) / (REVEAL_TO - REVEAL_FROM)));
+      var eased = 1 - Math.pow(1 - t, 3);   // ease-out cubic, settles rather than snaps
+
+      copy.style.opacity = String(eased);
+      copy.style.transform = "translateY(" + ((1 - eased) * 1.5).toFixed(3) + "rem)";
+      copy.style.visibility = eased < 0.02 ? "hidden" : "visible";
+      veil.style.opacity = String(eased);
+      cue.style.opacity = String(1 - Math.min(1, t * 2.2));
+    }
+
+    window.addEventListener("scroll", frame, { passive:true });
+    window.addEventListener("resize", frame);
+    window.addEventListener("orientationchange", frame);
+    frame();
+  })();
 
   var act    = document.getElementById("act");
   var film   = document.getElementById("film");

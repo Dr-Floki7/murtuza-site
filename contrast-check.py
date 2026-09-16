@@ -38,6 +38,15 @@ const {chromium} = require('playwright');
     };
   };
 
+  /* The banner is a two-beat reveal: at scroll 0 the copy is hidden and the veil is
+     transparent. Measure the state a visitor actually reads, with the copy fully on
+     and the veil at full strength. */
+  await p.evaluate(() => {
+    const b = document.getElementById('banner');
+    window.scrollTo({ top: (b.offsetHeight - window.innerHeight) * 0.8, behavior: 'instant' });
+  });
+  await p.waitForTimeout(900);
+
   const out = [];
   for (const sel of ['.banner h1','.banner h1 em','.banner__sub','.mark']) {
     const r = await read(sel);

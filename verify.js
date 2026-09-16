@@ -6,7 +6,13 @@ const path = require('path');
 const URL = 'http://127.0.0.1:8099/index.html';
 
 const WIDTHS = [320, 360, 390, 414, 768, 834, 1024, 1280, 1440, 1920, 2560];
-const LANDSCAPE = { w: 740, h: 360, name: 'landscape-phone' };
+// Short viewports get their own cases: a landscape phone, and the laptop-window
+// size where the headline was crowding the photograph.
+const SHORT = [
+  { w: 740, h: 360, name: 'landscape-phone' },
+  { w: 1024, h: 455, name: 'short-laptop' },
+  { w: 1366, h: 500, name: 'short-wide' },
+];
 
 (async () => {
   const browser = await chromium.launch({
@@ -42,14 +48,25 @@ const LANDSCAPE = { w: 740, h: 360, name: 'landscape-phone' };
         skipReachable: null,
       };
 
-      // any element wider than the viewport
+      /* Elements wider than the viewport, EXCEPT those inside a clipping ancestor.
+         A marquee track is deliberately wider than the screen and is clipped by its
+         parent; that is not a layout bug. The real invariant is that the document
+         does not scroll horizontally, asserted separately via docW vs winW. */
       const vw = window.innerWidth;
+      const isClipped = (el) => {
+        for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+          const ov = getComputedStyle(p);
+          if (/hidden|clip|auto|scroll/.test(ov.overflowX)) return true;
+        }
+        return false;
+      };
       document.querySelectorAll('body *').forEach((el) => {
         const b = el.getBoundingClientRect();
         if (b.width === 0 && b.height === 0) return;
         if (b.right > vw + 1.5 || b.left < -1.5) {
           const cs = getComputedStyle(el);
-          if (cs.position === 'fixed') return; // skip link parks off-screen by design
+          if (cs.position === 'fixed') return;   // skip link parks off-screen by design
+          if (isClipped(el)) return;
           out.overflow.push(
             (el.tagName + (el.className ? '.' + String(el.className).split(' ')[0] : '')) +
             ' L' + Math.round(b.left) + ' R' + Math.round(b.right)
@@ -79,14 +96,15 @@ const LANDSCAPE = { w: 740, h: 360, name: 'landscape-phone' };
       return out;
     });
 
-    /* The act is mid-page now, so scroll to a point genuinely inside its spacer
-       (a quarter of the way in) rather than a fixed multiple of the viewport. */
+    /* The act is mid-page, so scroll to a point genuinely inside its spacer.
+       behavior:'instant' matters: the page sets scroll-behavior:smooth, so a plain
+       scrollTo animates and the assertion below would measure mid-flight. */
     await page.evaluate(() => {
       const act = document.getElementById('act');
       const top = act.getBoundingClientRect().top + window.scrollY;
-      window.scrollTo(0, top + act.offsetHeight * 0.25);
+      window.scrollTo({ top: top + act.offsetHeight * 0.25, behavior: 'instant' });
     });
-    await new Promise((res) => setTimeout(res, 300));
+    await new Promise((res) => setTimeout(res, 350));
     const sticky = await page.evaluate(() => {
       const st = document.querySelector('.act__stage');
       if (!st) return { ok: false, why: 'no stage' };
@@ -101,21 +119,44 @@ const LANDSCAPE = { w: 740, h: 360, name: 'landscape-phone' };
       return { visible: on.length, text: on[0] ? on[0].querySelector('h2').textContent.trim() : null };
     });
 
-    // banner must fill the first viewport, with headline and CTA inside it
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await new Promise((res) => setTimeout(res, 150));
-    r.banner = await page.evaluate(() => {
-      const b = document.querySelector('.banner').getBoundingClientRect();
-      const h1 = document.querySelector('.banner h1').getBoundingClientRect();
-      const cta = document.querySelector('.banner a[download]').getBoundingClientRect();
+    /* Banner is a two-beat reveal now: beat one is the photograph alone, beat two
+       writes the copy on. So assert the image owns the first screen with the copy
+       still hidden, then that the copy fully arrives and fits after scrolling. */
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await new Promise((res) => setTimeout(res, 200));
+    const beat1 = await page.evaluate(() => {
+      const stage = document.querySelector('.banner__stage').getBoundingClientRect();
+      const copy = getComputedStyle(document.getElementById('banner-copy'));
       return {
-        ok: b.height >= window.innerHeight - 2 &&
-            h1.top >= 0 && h1.bottom <= window.innerHeight &&
-            cta.bottom <= window.innerHeight && cta.height >= 44,
-        bannerH: Math.round(b.height), vh: window.innerHeight,
-        h1Top: Math.round(h1.top), ctaBottom: Math.round(cta.bottom),
+        stageFills: stage.height >= window.innerHeight - 2,
+        copyOpacity: parseFloat(copy.opacity),
+        stageH: Math.round(stage.height), vh: window.innerHeight,
       };
     });
+
+    await page.evaluate(() => {
+      const b = document.getElementById('banner');
+      window.scrollTo({ top: (b.offsetHeight - window.innerHeight) * 0.75, behavior: 'instant' });
+    });
+    await new Promise((res) => setTimeout(res, 420));
+    const beat2 = await page.evaluate(() => {
+      const copy = document.getElementById('banner-copy');
+      const cs = getComputedStyle(copy);
+      const h1 = copy.querySelector('h1').getBoundingClientRect();
+      const cta = copy.querySelector('a[download]').getBoundingClientRect();
+      return {
+        opacity: parseFloat(cs.opacity),
+        h1Top: Math.round(h1.top), h1Bottom: Math.round(h1.bottom),
+        ctaBottom: Math.round(cta.bottom), ctaH: Math.round(cta.height),
+        fits: h1.top >= 0 && cta.bottom <= window.innerHeight + 1 && cta.height >= 44,
+      };
+    });
+
+    r.banner = {
+      ok: beat1.stageFills && beat1.copyOpacity < 0.1 &&
+          beat2.opacity > 0.95 && beat2.fits,
+      beat1, beat2,
+    };
 
     // the video element must fill its viewport at this ratio
     r.videoCovers = await page.evaluate(() => {
@@ -145,7 +186,7 @@ const LANDSCAPE = { w: 740, h: 360, name: 'landscape-phone' };
       };
     });
 
-    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
     r.skipReachable = skipReachable;
 
     const fails = [];
@@ -177,12 +218,12 @@ const LANDSCAPE = { w: 740, h: 360, name: 'landscape-phone' };
     await page.close();
   }
 
-  // short-and-wide case the spec calls out explicitly
-  {
-    const page = await browser.newPage({ viewport: { width: LANDSCAPE.w, height: LANDSCAPE.h } });
+  // short viewports, where the headline is most likely to crowd the image
+  for (const s of SHORT) {
+    const page = await browser.newPage({ viewport: { width: s.w, height: s.h } });
     await page.goto(URL, { waitUntil: 'load' });
     await page.waitForTimeout(450);
-    await audit(page, LANDSCAPE.name, LANDSCAPE.w, LANDSCAPE.h);
+    await audit(page, s.name, s.w, s.h);
     await page.close();
   }
 
@@ -223,7 +264,7 @@ const LANDSCAPE = { w: 740, h: 360, name: 'landscape-phone' };
     await page.goto(URL, { waitUntil: 'load' });
     await page.waitForTimeout(400);
     await page.screenshot({ path: `_shot_${w}_hero.png` });
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight * 0.93));
+    await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight * 0.93, behavior: 'instant' }));
     await page.waitForTimeout(500);
     await page.screenshot({ path: `_shot_${w}_end.png` });
     await page.close();
@@ -231,7 +272,7 @@ const LANDSCAPE = { w: 740, h: 360, name: 'landscape-phone' };
 
   await browser.close();
   console.log('\n' + (hardFail === 0
-    ? 'ALL CHECKS PASSED across ' + (WIDTHS.length + 2) + ' cases'
+    ? 'ALL CHECKS PASSED across ' + (WIDTHS.length + SHORT.length + 1) + ' cases'
     : hardFail + ' CASE(S) FAILED'));
   process.exit(hardFail === 0 ? 0 : 1);
 })();
