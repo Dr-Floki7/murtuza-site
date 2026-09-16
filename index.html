@@ -4,16 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Murtuza Bharmal · GTM &amp; Product Marketing</title>
-<meta name="description" content="Murtuza Bharmal. Clinically trained dentist turned go-to-market lead. Five-plus years of launches across consumer electronics and real estate, now focused on healthcare, medtech and healthtech.">
+<meta name="description" content="Murtuza Bharmal. Go-to-market and product marketing lead. Five-plus years of launches across consumer electronics and real estate, with a clinical background in dentistry. Focused on healthcare, medtech and healthtech.">
 <meta name="theme-color" content="#0A0E14">
 <meta name="author" content="Murtuza Bharmal">
 <link rel="canonical" href="https://murtuza.vercel.app/">
+
+<link rel="preload" href="fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
 
 <meta property="og:type" content="profile">
 <meta property="og:url" content="https://murtuza.vercel.app/">
 <meta property="og:site_name" content="Murtuza Bharmal">
 <meta property="og:title" content="Murtuza Bharmal · GTM &amp; Product Marketing">
-<meta property="og:description" content="Dentist first, marketer second. Five-plus years of launches across consumer electronics and real estate. Now building in healthtech.">
+<meta property="og:description" content="Go-to-market lead across consumer electronics and real estate, with a clinical background most product marketers only read about.">
 <meta property="og:image" content="https://murtuza.vercel.app/og-cover.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -23,7 +25,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Murtuza Bharmal · GTM &amp; Product Marketing">
-<meta name="twitter:description" content="Dentist first, marketer second. Five-plus years of launches across consumer electronics and real estate. Now building in healthtech.">
+<meta name="twitter:description" content="Go-to-market lead across consumer electronics and real estate, with a clinical background most product marketers only read about.">
 <meta name="twitter:image" content="https://murtuza.vercel.app/og-cover.jpg">
 
 <script type="application/ld+json">
@@ -56,7 +58,7 @@
       "url": "https://murtuza.vercel.app/",
       "jobTitle": "Go-To-Market Manager",
       "email": "mailto:dr.murtaza13b@gmail.com",
-      "description": "Clinically trained dentist turned go-to-market and product marketing lead. Five-plus years of product launches across consumer electronics and real estate, now focused on healthcare, medtech and healthtech.",
+      "description": "Go-to-market and product marketing lead. Five-plus years of product launches across consumer electronics and real estate, with a clinical background as a practising dentist. Focused on healthcare, medtech and healthtech.",
       "sameAs": ["https://www.linkedin.com/in/murtaza-bharmal77/"],
       "alumniOf": [
         { "@type": "CollegeOrUniversity", "name": "Nirma University" },
@@ -113,7 +115,7 @@
           "name": "Which sectors has Murtuza Bharmal launched products in?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Three. Healthcare, through clinical practice and community outreach. Consumer electronics, at Xiaomi India, covering smartphone, smart TV and AIoT launches across an exclusive retail channel. Real estate, owning go-to-market for a slate of residential launches."
+            "text": "Three. Real estate, owning go-to-market for a slate of residential launches. Consumer electronics, at Xiaomi India, covering smartphone, smart TV and AIoT launches across an exclusive retail channel. Healthcare, through clinical practice and community outreach."
           }
         },
         {
@@ -156,28 +158,23 @@
    TOKENS
    ═══════════════════════════════════════════════════════════ */
 :root{
-  /* grounds — ink is blue-shifted, never neutral black */
   --ink:#0A0E14;
   --ink-lift:#131A24;
   --paper:#ECEDEF;
   --paper-lift:#F7F8F9;
 
-  /* one committed signal, flat, never a gradient */
   --signal:#1B4DFF;
-  --signal-lift:#7B9AFF;   /* 4.9:1 over the lit stage; --signal is only 3.1:1 there */
+  --signal-lift:#7B9AFF;   /* AA over the lit stage; --signal is only 3.1:1 there */
 
-  /* type on ink — secondary tinted from the ground's hue, not gray */
   --on-ink:#F2F4F7;
-  --on-ink-2:#9AA6BC;
+  --on-ink-2:#9AA6BC;      /* tinted from the ground's hue, never gray */
 
-  /* type on paper */
   --on-paper:#0A0E14;
   --on-paper-2:#4A5468;
 
   --rule-ink:rgba(154,166,188,.24);
   --rule-paper:rgba(10,14,20,.16);
 
-  /* fluid type, 320 → 2560. display capped at 6rem. */
   --t-xs:clamp(.6875rem,.66rem + .14vw,.8125rem);
   --t-sm:clamp(.875rem,.85rem + .16vw,1rem);
   --t-base:clamp(1rem,.97rem + .2vw,1.1875rem);
@@ -208,7 +205,7 @@ body{
   font-size:var(--t-base);
   font-variation-settings:"wdth" 100,"wght" 400;
   line-height:1.6;
-  overflow-x:clip;
+  overflow-x:clip;              /* clip, not hidden: preserves position:sticky */
   -webkit-font-smoothing:antialiased;
   font-feature-settings:"kern" 1;
 }
@@ -220,7 +217,7 @@ ul,ol,dl,dd{margin:0;padding:0}
 li{list-style:none}
 a{color:inherit;text-underline-offset:.22em;text-decoration-thickness:1px}
 
-/* ── browser surfaces: these ship with defaults belonging to no design ── */
+/* browser surfaces ship with defaults belonging to no design system */
 ::selection{background:var(--signal);color:#fff}
 ::-moz-selection{background:var(--signal);color:#fff}
 html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scrollbar-width:thin}
@@ -231,8 +228,7 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
 
 :where(a,button,[tabindex]):focus-visible{
   outline:2px solid var(--signal);
-  outline-offset:3px;
-  border-radius:2px;
+  outline-offset:3px;border-radius:2px;
 }
 .on-ink :where(a,button):focus-visible{outline-color:var(--signal-lift)}
 
@@ -241,19 +237,16 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
 .skip{
   position:fixed;left:1rem;top:-6rem;z-index:200;
   background:var(--signal);color:#fff;
-  padding:.85rem 1.25rem;font-size:var(--t-sm);font-weight:600;
-  text-decoration:none;
+  padding:.85rem 1.25rem;font-size:var(--t-sm);font-weight:600;text-decoration:none;
 }
 .skip:focus{top:1rem}
 
-/* display voice — the width axis does the work */
 .display{
   font-variation-settings:"wdth" 116,"wght" 800;
-  letter-spacing:-.035em;          /* tracking floor is -.04em */
+  letter-spacing:-.035em;       /* tracking floor is -.04em */
   line-height:.94;
   font-size:var(--t-display);
 }
-/* small structural labels. never placed directly above a heading. */
 .label{
   font-variation-settings:"wdth" 84,"wght" 650;
   font-size:var(--t-xs);
@@ -263,56 +256,41 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
 }
 
 /* ═══════════════════════════════════════════════════════════
-   THE ACT — scroll-scrubbed, three wardrobe stages
+   BANNER — static, paints immediately, no video dependency
    ═══════════════════════════════════════════════════════════ */
-.act{
+.banner{
   position:relative;
-  height:800vh;                    /* three stages need room to breathe */
-  background:var(--ink);
-}
-.act__stage{
-  position:sticky;top:0;
-  height:100vh;height:100svh;
-  overflow:hidden;
+  min-height:100svh;
+  display:grid;
   background:
-    /* operatory light: one hard cool key on the subject, rest to shadow */
-    radial-gradient(58% 44% at 50% 34%,rgba(196,214,242,.17),transparent 70%),
+    radial-gradient(64% 48% at 50% 30%,rgba(196,214,242,.15),transparent 72%),
     var(--ink);
   color:var(--on-ink);
+  overflow:hidden;
 }
-.act__video{
+.banner__img{
   position:absolute;inset:0;
   width:100%;height:100%;
-  object-fit:cover;                /* covers at every ratio, no letterboxing */
-  object-position:center 34%;      /* holds the subject on a portrait crop */
-  opacity:0;transition:opacity .9s ease;
+  object-fit:cover;
+  object-position:center 28%;   /* holds the faces on a portrait crop */
+  opacity:0;transition:opacity 1s ease;
 }
-.act.is-ready .act__video{opacity:1}
-
-/* legibility scrim, weighted to the corners copy actually occupies */
-.act__stage::after{
+.banner__img.is-in{opacity:1}
+.banner::after{
   content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
   background:
-    linear-gradient(to top,rgba(10,14,20,.88) 0%,rgba(10,14,20,.30) 34%,transparent 58%),
-    linear-gradient(to bottom,rgba(10,14,20,.62) 0%,transparent 34%);
+    linear-gradient(to top,var(--ink) 0%,rgba(10,14,20,.86) 22%,rgba(10,14,20,.28) 52%,transparent 74%),
+    linear-gradient(to bottom,rgba(10,14,20,.66) 0%,transparent 30%);
 }
-/* the dissolve to paper — the act's one exit */
-.act__wash{
-  position:absolute;inset:0;z-index:5;pointer-events:none;
-  background:var(--paper);opacity:0;
-}
-
-.act__ui{
-  position:absolute;inset:0;z-index:6;
-  display:grid;
-  grid-template-rows:auto 1fr auto;
+.banner__ui{
+  position:relative;z-index:3;
+  display:grid;grid-template-rows:auto 1fr auto;
   width:100%;max-width:var(--maxw);margin-inline:auto;
   padding-inline:var(--gutter);
   padding-block:
     calc(var(--s-3) + env(safe-area-inset-top))
-    calc(var(--s-3) + env(safe-area-inset-bottom));
+    calc(var(--s-4) + env(safe-area-inset-bottom));
 }
-/* natural case: 41 characters of uppercase is a passage, not a label */
 .mark{
   font-variation-settings:"wdth" 88,"wght" 650;
   font-size:var(--t-base);letter-spacing:.03em;
@@ -320,38 +298,22 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
 }
 .mark span{color:var(--on-ink-2)}
 
-/* panels stack in the same grid cell and cross-fade */
-.panels{position:relative;grid-row:3;align-self:end}
-.panel{
-  opacity:0;visibility:hidden;
-  transition:opacity .55s ease,visibility .55s;
-  max-width:min(46rem,100%);
-}
-.panel[data-on]{opacity:1;visibility:visible}
-.panel + .panel{position:absolute;inset:auto auto 0 0;width:100%}
-
-/* tinted from the ground's hue, and blue stays reserved for the display line and buttons */
-.panel__year{color:var(--on-ink-2);display:block;margin-bottom:var(--s-2)}
-.panel h2{font-size:var(--t-lg);font-variation-settings:"wdth" 110,"wght" 750;letter-spacing:-.03em;margin-bottom:var(--s-2)}
-.panel p{font-size:var(--t-md);color:var(--on-ink-2);max-width:38ch}
-
-/* opening panel */
-.open__name{margin-bottom:var(--s-3)}
-.open h1{margin-bottom:var(--s-3);max-width:22ch}
-.open h1 em{font-style:normal;color:var(--signal-lift);display:block}
-.open p{
+.banner__body{grid-row:3;max-width:min(52rem,100%)}
+.banner h1{margin-bottom:var(--s-3);max-width:24ch}
+/* let the second line fill before it breaks; balance splits it early at wide sizes */
+.banner h1 em{font-style:normal;color:var(--signal-lift);display:block;text-wrap:normal}
+.banner__sub{
   font-size:var(--t-md);color:var(--on-ink-2);
-  max-width:34ch;margin-bottom:var(--s-4);
+  max-width:44ch;margin-bottom:var(--s-4);
 }
-
 .cue{
-  grid-row:3;justify-self:end;align-self:end;
+  margin-top:var(--s-4);
   display:flex;align-items:center;gap:.7em;
   color:var(--on-ink-2);pointer-events:none;
 }
 .cue i{
   display:block;width:2.5rem;height:1px;background:currentColor;
-  transform-origin:right;animation:cue 2.6s ease-in-out infinite;
+  transform-origin:left;animation:cue 2.6s ease-in-out infinite;
 }
 @keyframes cue{0%,100%{transform:scaleX(.3);opacity:.45}50%{transform:scaleX(1);opacity:1}}
 
@@ -361,18 +323,15 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
 .actions{display:flex;flex-wrap:wrap;gap:var(--s-2)}
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:.6em;
-  min-height:3rem;min-width:3rem;
-  padding:.9rem 1.6rem;
+  min-height:3rem;min-width:3rem;padding:.9rem 1.6rem;
   font-family:inherit;font-size:var(--t-sm);
   font-variation-settings:"wdth" 96,"wght" 650;
-  letter-spacing:.01em;
-  text-decoration:none;cursor:pointer;
+  letter-spacing:.01em;text-decoration:none;cursor:pointer;
   border:1px solid transparent;border-radius:0;
   transition:background .18s ease,color .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease;
 }
 .btn svg{width:1em;height:1em;flex:none}
 .btn--fill{background:var(--signal);color:#fff}
-/* no coloured halo: that is the near-black-plus-neon cluster, and this world is not that */
 .btn--fill:hover{background:#0F3ADB;box-shadow:0 5px 16px -6px rgba(6,9,14,.85);transform:translateY(-1px)}
 .btn--line{border-color:var(--rule-ink);color:var(--on-ink)}
 .btn--line:hover{border-color:var(--signal-lift);color:var(--signal-lift)}
@@ -383,22 +342,19 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
    PAPER SECTIONS — document grammar, margin column of years
    ═══════════════════════════════════════════════════════════ */
 .sheet{padding-block:var(--s-6);position:relative}
+.sheet--tight{padding-block:var(--s-5)}
 
 .lead{
   font-size:var(--t-xl);
   font-variation-settings:"wdth" 108,"wght" 700;
   letter-spacing:-.03em;line-height:1.04;
-  max-width:26ch;
-  margin-bottom:var(--s-4);
+  max-width:26ch;margin-bottom:var(--s-4);
 }
 .lead-body{font-size:var(--t-md);color:var(--on-paper-2);max-width:68ch}
 
-/* a row: year in the margin, content in the main column */
 .rows{border-top:1px solid var(--rule-paper);margin-top:var(--s-5)}
 .row{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:var(--s-2);
+  display:grid;grid-template-columns:1fr;gap:var(--s-2);
   padding-block:var(--s-4);
   border-bottom:1px solid var(--rule-paper);
 }
@@ -410,8 +366,7 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
 .row h3{
   font-size:var(--t-md);
   font-variation-settings:"wdth" 106,"wght" 720;
-  letter-spacing:-.025em;
-  margin-bottom:var(--s-1);
+  letter-spacing:-.025em;margin-bottom:var(--s-1);
 }
 .row__where{color:var(--on-paper-2);font-size:var(--t-base);margin-bottom:var(--s-2)}
 .row p{color:var(--on-paper-2);max-width:64ch}
@@ -425,7 +380,6 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
   width:.55em;height:1px;background:var(--signal);
 }
 
-/* capability index — dense, typographic, no pills */
 .index{
   margin-top:var(--s-4);
   border-top:1px solid var(--rule-paper);
@@ -434,12 +388,76 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
 @media (min-width:34rem){.index{columns:2}}
 @media (min-width:64rem){.index{columns:3}}
 .index li{
-  break-inside:avoid;
-  padding-block:.7rem;
+  break-inside:avoid;padding-block:.7rem;
   border-bottom:1px solid var(--rule-paper);
   font-size:var(--t-base);
   font-variation-settings:"wdth" 98,"wght" 500;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   THE ACT — mid-page scrubbed film. Lights down, lights up.
+   ═══════════════════════════════════════════════════════════ */
+.act{
+  position:relative;
+  height:700vh;
+  background:var(--ink);
+}
+.act__stage{
+  position:sticky;top:0;
+  height:100vh;height:100svh;
+  overflow:hidden;
+  background:
+    radial-gradient(58% 44% at 50% 34%,rgba(196,214,242,.17),transparent 70%),
+    var(--ink);
+  color:var(--on-ink);
+}
+.act__video{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  object-position:center 34%;
+  opacity:0;transition:opacity .9s ease;
+}
+.act.is-ready .act__video{opacity:1}
+.act__stage::after{
+  content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:
+    linear-gradient(to top,rgba(10,14,20,.88) 0%,rgba(10,14,20,.30) 34%,transparent 58%),
+    linear-gradient(to bottom,rgba(10,14,20,.62) 0%,transparent 34%);
+}
+/* The wash runs at BOTH ends: paper fades down into the film and back up out of it.
+   It sits ABOVE the copy (z-index 7 > .act__ui's 6) so lights-down hides the text too;
+   underneath it, light copy would land on a light ground and vanish.
+   Default 0 so that without JS the film area still reads normally. */
+.act__wash{
+  position:absolute;inset:0;z-index:7;pointer-events:none;
+  background:var(--paper);opacity:0;
+}
+
+.act__ui{
+  position:absolute;inset:0;z-index:6;
+  display:grid;grid-template-rows:1fr auto;
+  width:100%;max-width:var(--maxw);margin-inline:auto;
+  padding-inline:var(--gutter);
+  padding-block:
+    calc(var(--s-4) + env(safe-area-inset-top))
+    calc(var(--s-5) + env(safe-area-inset-bottom));
+}
+.panels{position:relative;grid-row:2}
+.panel{
+  opacity:0;visibility:hidden;
+  transition:opacity .55s ease,visibility .55s;
+  max-width:min(46rem,100%);
+}
+.panel[data-on]{opacity:1;visibility:visible}
+.panel + .panel{position:absolute;inset:auto auto 0 0;width:100%}
+.panel__year{color:var(--on-ink-2);display:block;margin-bottom:var(--s-2)}
+.panel h2{
+  font-size:var(--t-lg);
+  font-variation-settings:"wdth" 110,"wght" 750;
+  letter-spacing:-.03em;margin-bottom:var(--s-2);
+}
+.panel p{font-size:var(--t-md);color:var(--on-ink-2);max-width:40ch}
 
 /* ═══════════════════════════════════════════════════════════
    AGENT SLOT
@@ -472,8 +490,7 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
 .close h2{
   font-size:var(--t-xl);
   font-variation-settings:"wdth" 112,"wght" 780;
-  letter-spacing:-.035em;max-width:24ch;
-  margin-bottom:var(--s-3);
+  letter-spacing:-.035em;max-width:24ch;margin-bottom:var(--s-3);
 }
 .close p{font-size:var(--t-md);color:rgba(255,255,255,.86);max-width:52ch;margin-bottom:var(--s-4)}
 .close .btn--fill{background:#fff;color:var(--signal)}
@@ -489,17 +506,17 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
 .foot a:hover{color:var(--on-ink);border-bottom-color:var(--signal-lift)}
 
 /* ═══════════════════════════════════════════════════════════
-   REDUCED MOTION — skip the scrub entirely, reveal everything
+   REDUCED MOTION — no scrub at all, every stage readable
    ═══════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .banner__img{opacity:1}
   .act{height:auto}
   .act__stage{position:relative;height:auto;min-height:min(88svh,44rem)}
   .act__ui{position:relative;inset:auto;min-height:min(88svh,44rem)}
   .act__wash{display:none}
   .cue{display:none}
-  /* stages become stacked, readable blocks instead of cross-fades */
   .panels{display:grid;gap:var(--s-4)}
   .panel{opacity:1;visibility:visible;position:static!important;inset:auto!important}
   .panel + .panel{position:static}
@@ -507,10 +524,10 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
 
 /* short-and-wide, e.g. landscape phone ~740×360 */
 @media (max-height:30rem) and (orientation:landscape){
-  .act__ui{padding-block:var(--s-2)}
+  .banner__ui,.act__ui{padding-block:var(--s-2)}
   .display{font-size:clamp(1.5rem,7.5vh,2.5rem)}
-  .open p,.panel p{font-size:var(--t-base);max-width:32ch;margin-bottom:var(--s-2)}
-  .open h1{margin-bottom:var(--s-2)}
+  .banner__sub,.panel p{font-size:var(--t-base);max-width:34ch;margin-bottom:var(--s-2)}
+  .banner h1{margin-bottom:var(--s-2)}
   .panel h2{font-size:var(--t-md)}
   .cue{display:none}
   .btn{min-height:2.75rem;padding:.6rem 1.1rem}
@@ -522,89 +539,110 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
 <a class="skip" href="#main">Skip to content</a>
 
 <!-- ═══════════════════════════════════════════════════════
-     THE ACT
+     BANNER
      ═══════════════════════════════════════════════════════ -->
-<div class="act on-ink" id="act">
-  <div class="act__stage">
+<header class="banner on-ink">
+  <img class="banner__img" id="banner-img"
+       src="banner.jpg"
+       alt="Three versions of Murtuza Bharmal in one frame: centre, in a navy blazer, looking directly ahead; to his left the same man in a white clinical coat; to his right the same man in a polo shirt holding a phone."
+       fetchpriority="high" decoding="async" width="2560" height="1440">
 
-    <video class="act__video" id="film"
-           muted playsinline webkit-playsinline
-           preload="auto" disablepictureinpicture
-           aria-hidden="true" tabindex="-1">
-      <source src="scrub.mp4" type="video/mp4">
-    </video>
+  <div class="banner__ui">
+    <p class="mark">Murtuza Bharmal <span>· GTM &amp; Product Marketing</span></p>
 
-    <div class="act__wash" id="wash" aria-hidden="true"></div>
-
-    <div class="act__ui">
-
-      <p class="mark">Murtuza Bharmal <span>· GTM &amp; Product Marketing</span></p>
-
-      <div class="panels">
-
-        <!-- opening -->
-        <header class="panel open" data-panel="0" data-on>
-          <h1 class="display">Trained to read people.<em>Built to launch products.</em></h1>
-          <p>A dentist who moved into marketing. Five-plus years of launches across
-             consumer electronics and real estate.</p>
-          <div class="actions">
-            <a class="btn btn--fill" href="Murtuza_Bharmal_Resume_HT.pdf" download>
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-                <path d="M8 1.6v9M4.4 7.4 8 11l3.6-3.6M2 13.4h12"/>
-              </svg>
-              Download CV
-            </a>
-            <a class="btn btn--line" href="#contact">Get in touch</a>
-          </div>
-        </header>
-
-        <!-- stage 1 -->
-        <section class="panel" data-panel="1" aria-hidden="true">
-          <span class="label panel__year">2013 – 2020</span>
-          <h2>The white coat came first.</h2>
-          <p>Five years of dental training, then general practice and 20+ community
-             health camps. Watching how people actually decide.</p>
-        </section>
-
-        <!-- stage 2 -->
-        <section class="panel" data-panel="2" aria-hidden="true">
-          <span class="label panel__year">2022 – 2025</span>
-          <h2>Then it came off.</h2>
-          <p>An MBA, then Xiaomi India. Smartphone, smart TV and AIoT launches
-             across an exclusive retail channel.</p>
-        </section>
-
-        <!-- stage 3 -->
-        <section class="panel" data-panel="3" aria-hidden="true">
-          <span class="label panel__year">2025 – now</span>
-          <h2>Now the whole plan.</h2>
-          <p>Go-to-market ownership for residential launches. Positioning through
-             pricing through funnel, end to end.</p>
-        </section>
-
+    <div class="banner__body">
+      <h1 class="display">Three industries.<em>One way of thinking.</em></h1>
+      <p class="banner__sub">
+        Go-to-market and product marketing. Five-plus years of launches across real
+        estate and consumer electronics, on top of a clinical career most marketers
+        have only read about.
+      </p>
+      <div class="actions">
+        <a class="btn btn--fill" href="Murtuza_Bharmal_Resume_HT.pdf" download>
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M8 1.6v9M4.4 7.4 8 11l3.6-3.6M2 13.4h12"/>
+          </svg>
+          Download CV
+        </a>
+        <a class="btn btn--line" href="#contact">Get in touch</a>
       </div>
-
       <p class="cue label"><i></i> Scroll</p>
     </div>
   </div>
-</div>
+</header>
 
 <!-- ═══════════════════════════════════════════════════════ -->
-<main id="main" class="on-paper">
+<main id="main">
 
-  <section class="sheet" aria-labelledby="arc-h">
+  <section class="sheet sheet--tight on-paper" aria-labelledby="thesis-h">
     <div class="wrap">
-      <h2 class="lead" id="arc-h">Three industries. One thing that carried across.</h2>
+      <h2 class="lead" id="thesis-h">I did not start in marketing.</h2>
+      <p class="lead-body">
+        I started in a dental clinic, watching people weigh a decision they could not
+        undo. Then an MBA, then national product launches, then owning go-to-market
+        end to end. Same funnel every time, drawn on a different whiteboard.
+      </p>
+    </div>
+  </section>
+
+  <!-- lights down -->
+  <section class="act on-ink" id="act" aria-label="Career sequence, presented as a scroll-controlled film">
+    <div class="act__stage">
+      <video class="act__video" id="film"
+             muted playsinline webkit-playsinline
+             preload="none" disablepictureinpicture
+             aria-hidden="true" tabindex="-1">
+        <source src="scrub.mp4" type="video/mp4">
+      </video>
+
+      <div class="act__wash" id="wash" aria-hidden="true"></div>
+
+      <div class="act__ui">
+        <div class="panels">
+          <section class="panel" data-panel="0" data-on>
+            <span class="label panel__year">2025 — now</span>
+            <h2>Right now, launches.</h2>
+            <p>
+              Go-to-market ownership for residential launches. Positioning, pricing,
+              channel rollout and the funnel underneath, end to end.
+            </p>
+          </section>
+
+          <section class="panel" data-panel="1" aria-hidden="true">
+            <span class="label panel__year">2022 — 2025</span>
+            <h2>Before that, national scale.</h2>
+            <p>
+              Xiaomi India. Smartphone, smart TV and AIoT launches across an exclusive
+              retail channel, and the campaigns that drove people into stores.
+            </p>
+          </section>
+
+          <section class="panel" data-panel="2" aria-hidden="true">
+            <span class="label panel__year">2013 — 2020</span>
+            <h2>And before that, a white coat.</h2>
+            <p>
+              Five years of dental training, then practice and 20+ community health
+              camps. Where the understanding of how people decide actually comes from.
+            </p>
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- lights up -->
+
+  <section class="sheet on-paper" aria-labelledby="arc-h">
+    <div class="wrap">
+      <h2 class="lead" id="arc-h">The detail.</h2>
       <p class="lead-body">
         Clinical practice taught me how people weigh a decision they cannot undo.
         Consumer electronics taught me how to launch at national scale on a fixed date.
         Real estate taught me how to sell something a family thinks about for months.
-        The through-line is the same funnel, drawn on different whiteboards.
       </p>
 
       <div class="rows">
         <article class="row">
-          <p class="row__when label">2025 – now</p>
+          <p class="row__when label">2025 — now</p>
           <div class="row__body">
             <h3>Go-To-Market Manager</h3>
             <p class="row__where">An India real estate developer</p>
@@ -625,7 +663,7 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
         </article>
 
         <article class="row">
-          <p class="row__when label">2022 – 2025</p>
+          <p class="row__when label">2022 — 2025</p>
           <div class="row__body">
             <h3>Senior Specialist, Marketing</h3>
             <p class="row__where">Xiaomi India</p>
@@ -646,7 +684,7 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
         </article>
 
         <article class="row">
-          <p class="row__when label">2020 – 2021</p>
+          <p class="row__when label">2020 — 2021</p>
           <div class="row__body">
             <h3>Business Manager</h3>
             <p class="row__where">Forrum Enterprise, pharmaceutical distribution</p>
@@ -659,7 +697,7 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
         </article>
 
         <article class="row">
-          <p class="row__when label">2018 – 2020</p>
+          <p class="row__when label">2018 — 2020</p>
           <div class="row__body">
             <h3>Clinical practice &amp; community outreach</h3>
             <p class="row__where">General dentistry</p>
@@ -674,7 +712,7 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
     </div>
   </section>
 
-  <section class="sheet" aria-labelledby="cap-h">
+  <section class="sheet on-paper" aria-labelledby="cap-h">
     <div class="wrap">
       <h2 class="lead" id="cap-h">What I do.</h2>
       <p class="lead-body">
@@ -706,19 +744,19 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
     </div>
   </section>
 
-  <section class="sheet" aria-labelledby="cred-h">
+  <section class="sheet on-paper" aria-labelledby="cred-h">
     <div class="wrap">
       <h2 class="lead" id="cred-h">Credentials.</h2>
       <div class="rows">
         <article class="row">
-          <p class="row__when label">2020 – 2022</p>
+          <p class="row__when label">2020 — 2022</p>
           <div class="row__body">
             <h3>MBA, Marketing</h3>
             <p class="row__where">Nirma University</p>
           </div>
         </article>
         <article class="row">
-          <p class="row__when label">2013 – 2018</p>
+          <p class="row__when label">2013 — 2018</p>
           <div class="row__body">
             <h3>Bachelor of Dental Surgery</h3>
             <p class="row__where">AMC Dental College &amp; Hospital</p>
@@ -754,7 +792,7 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
     </div>
   </section>
 
-  <section class="sheet" id="questions" aria-labelledby="faq-h">
+  <section class="sheet on-paper" id="questions" aria-labelledby="faq-h">
     <div class="wrap">
       <h2 class="lead" id="faq-h">The obvious questions.</h2>
       <div class="rows">
@@ -776,10 +814,10 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
           <div class="row__body">
             <h3>Which sectors have you launched products in?</h3>
             <p>
-              Three. Healthcare, through clinical practice and community outreach. Consumer
-              electronics, at Xiaomi India, covering smartphone, smart TV and AIoT launches
-              across an exclusive retail channel. Real estate, owning go-to-market for a slate
-              of residential launches.
+              Three. Real estate, owning go-to-market for a slate of residential launches.
+              Consumer electronics, at Xiaomi India, covering smartphone, smart TV and AIoT
+              launches across an exclusive retail channel. Healthcare, through clinical
+              practice and community outreach.
             </p>
           </div>
         </article>
@@ -848,33 +886,54 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   document.getElementById("yr").textContent = new Date().getFullYear();
 
+  /* ── Banner: fade in once decoded. Missing file keeps the lit gradient. ── */
+  var bannerImg = document.getElementById("banner-img");
+  function showBanner(){ bannerImg.classList.add("is-in"); }
+  if (bannerImg.complete && bannerImg.naturalWidth > 0) showBanner();
+  bannerImg.addEventListener("load", showBanner);
+  bannerImg.addEventListener("error", function(){ bannerImg.remove(); });
+
   var act    = document.getElementById("act");
   var film   = document.getElementById("film");
   var wash   = document.getElementById("wash");
   var panels = Array.prototype.slice.call(document.querySelectorAll(".panel"));
 
-  /* Clip missing or undecodable: keep the lit stage, keep everything readable. */
   film.addEventListener("error", function(){ act.classList.remove("is-ready"); }, true);
 
-  /* ── Reduced motion: no scrubbing at all. Play it quietly, show every panel. ── */
+  /* ── Reduced motion: no scrubbing. Loop quietly, show every panel. ── */
   if (reduced) {
+    panels.forEach(function(p){ p.setAttribute("data-on",""); p.removeAttribute("aria-hidden"); });
     film.loop = true;
     film.autoplay = true;
-    panels.forEach(function(p){
-      p.setAttribute("data-on","");
-      p.removeAttribute("aria-hidden");
-    });
+    film.preload = "auto";
     film.addEventListener("loadeddata", function(){
       act.classList.add("is-ready");
       var r = film.play();
       if (r && r.catch) r.catch(function(){});
     });
+    film.load();
     return;
   }
 
-  /* ── Scrub engine ────────────────────────────────────────
-     progress 0..1 across the spacer → TARGET time, then ease
-     the real currentTime toward it so it reads smooth.       */
+  /* ── Lazy load: the clip is mid-page, so it costs nothing up front.
+        Fetch it once the visitor is within ~1.5 viewports of the act. ── */
+  var asked = false;
+  function requestFilm(){
+    if (asked) return;
+    asked = true;
+    film.preload = "auto";
+    film.load();
+  }
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function(entries){
+      if (entries.some(function(e){ return e.isIntersecting; })) { requestFilm(); io.disconnect(); }
+    }, { rootMargin: "150% 0px 150% 0px" });
+    io.observe(act);
+  } else {
+    requestFilm();
+  }
+
+  /* ── Scrub engine ──────────────────────────────────────── */
   var target = 0, current = 0, ready = false, ticking = false, shown = -1;
 
   function clamp(v,lo,hi){ return v < lo ? lo : v > hi ? hi : v; }
@@ -885,13 +944,11 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
     return clamp(-act.getBoundingClientRect().top / span, 0, 1);
   }
 
-  /* Which panel owns this scroll position. Gaps between the bands
-     are deliberate: the film gets moments with no copy over it. */
+  /* Gaps between bands are deliberate: the film gets moments with no copy over it. */
   function panelFor(p){
-    if (p < 0.10) return 0;
-    if (p >= 0.15 && p < 0.37) return 1;
-    if (p >= 0.42 && p < 0.64) return 2;
-    if (p >= 0.69 && p < 0.91) return 3;
+    if (p >= 0.10 && p < 0.34) return 0;
+    if (p >= 0.40 && p < 0.62) return 1;
+    if (p >= 0.68 && p < 0.90) return 2;
     return -1;
   }
 
@@ -900,13 +957,15 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
     if (next !== shown) {
       shown = next;
       panels.forEach(function(el,i){
-        var on = i === next;
-        if (on) { el.setAttribute("data-on",""); el.removeAttribute("aria-hidden"); }
-        else    { el.removeAttribute("data-on"); el.setAttribute("aria-hidden","true"); }
+        if (i === next) { el.setAttribute("data-on",""); el.removeAttribute("aria-hidden"); }
+        else            { el.removeAttribute("data-on"); el.setAttribute("aria-hidden","true"); }
       });
     }
-    /* the act's single exit: dissolve to paper over the last stretch */
-    wash.style.opacity = String(clamp((p - 0.93) / 0.07, 0, 1));
+    /* lights down on entry, lights up on exit */
+    var w = 0;
+    if (p < 0.07)      w = 1 - p / 0.07;
+    else if (p > 0.94) w = (p - 0.94) / 0.06;
+    wash.style.opacity = String(clamp(w, 0, 1));
   }
 
   function onScroll(){

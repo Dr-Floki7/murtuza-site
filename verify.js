@@ -79,9 +79,14 @@ const LANDSCAPE = { w: 740, h: 360, name: 'landscape-phone' };
       return out;
     });
 
-    // does position:sticky survive overflow-x:clip on body?
-    await page.evaluate(() => window.scrollTo(0, window.innerHeight * 2.5));
-    await new Promise((res) => setTimeout(res, 260));
+    /* The act is mid-page now, so scroll to a point genuinely inside its spacer
+       (a quarter of the way in) rather than a fixed multiple of the viewport. */
+    await page.evaluate(() => {
+      const act = document.getElementById('act');
+      const top = act.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo(0, top + act.offsetHeight * 0.25);
+    });
+    await new Promise((res) => setTimeout(res, 300));
     const sticky = await page.evaluate(() => {
       const st = document.querySelector('.act__stage');
       if (!st) return { ok: false, why: 'no stage' };
@@ -89,6 +94,28 @@ const LANDSCAPE = { w: 740, h: 360, name: 'landscape-phone' };
       return { ok: Math.abs(b.top) < 2, top: Math.round(b.top), h: Math.round(b.height) };
     });
     r.stickyWorks = sticky;
+
+    // exactly one stage panel showing a quarter of the way into the act
+    r.panelState = await page.evaluate(() => {
+      const on = [...document.querySelectorAll('.panel')].filter((p) => p.hasAttribute('data-on'));
+      return { visible: on.length, text: on[0] ? on[0].querySelector('h2').textContent.trim() : null };
+    });
+
+    // banner must fill the first viewport, with headline and CTA inside it
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await new Promise((res) => setTimeout(res, 150));
+    r.banner = await page.evaluate(() => {
+      const b = document.querySelector('.banner').getBoundingClientRect();
+      const h1 = document.querySelector('.banner h1').getBoundingClientRect();
+      const cta = document.querySelector('.banner a[download]').getBoundingClientRect();
+      return {
+        ok: b.height >= window.innerHeight - 2 &&
+            h1.top >= 0 && h1.bottom <= window.innerHeight &&
+            cta.bottom <= window.innerHeight && cta.height >= 44,
+        bannerH: Math.round(b.height), vh: window.innerHeight,
+        h1Top: Math.round(h1.top), ctaBottom: Math.round(cta.bottom),
+      };
+    });
 
     // the video element must fill its viewport at this ratio
     r.videoCovers = await page.evaluate(() => {
@@ -127,6 +154,8 @@ const LANDSCAPE = { w: 740, h: 360, name: 'landscape-phone' };
     if (r.tinyTap.length) fails.push('TAP<44 ' + r.tinyTap.slice(0, 3).join('; '));
     if (r.smallText.length) fails.push('TEXT<16 ' + r.smallText.slice(0, 2).join('; '));
     if (!r.stickyWorks.ok) fails.push('STICKY BROKEN top=' + r.stickyWorks.top);
+    if (r.panelState.visible !== 1) fails.push('PANELS visible=' + r.panelState.visible);
+    if (!r.banner.ok) fails.push('BANNER ' + JSON.stringify(r.banner));
     if (!r.videoCovers.ok) fails.push('VIDEO NOT COVERING ' + r.videoCovers.w + 'x' + r.videoCovers.h);
     if (!r.ctaVisible.ok) fails.push('CTA ' + JSON.stringify(r.ctaVisible));
     if (!r.skipReachable.ok) fails.push('SKIP LINK ' + JSON.stringify(r.skipReachable));
