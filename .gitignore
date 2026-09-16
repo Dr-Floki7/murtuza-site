@@ -1,0 +1,24 @@
+# deps — verify.js is a dev-only check, the site itself has no dependencies
+node_modules/
+
+# deploy
+.vercel/
+
+# verification output
+_shot_*.png
+_det.json
+
+# reference material, kept locally, not worth carrying in the repo
+# (gitignore does not parse quotes; spaces are literal)
+My site flow.pdf
+UI & Skills.docx
+
+# raw clips before the all-keyframe re-encode. only scrub.mp4 ships.
+clip1.mp4
+clip2.mp4
+clip3.mp4
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store
