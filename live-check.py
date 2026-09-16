@@ -41,10 +41,14 @@ else:
 print("\nis this the real page?")
 for label, probe in (
     ("headline", "Three industries"),
-    ("banner img", 'class="banner__img"'),
+    ("banner element", 'class="banner__img"'),
+    ("banner poster", 'poster="banner.jpg"'),
     ("JSON-LD", "application/ld+json"),
-    ("FAQPage", '"FAQPage"'),
     ("Person schema", '"jobTitle"'),
+    ("Flow Realty named", "Flow Realty"),
+    ("six film beats", 'data-panel="5"'),
+    ("ticker", 'class="ticker'),
+    ("agent dialog", 'id="agent-dialog"'),
     ("analytics", "_vercel/insights"),
     ("instrumentation", "visit_summary"),
 ):
@@ -60,6 +64,8 @@ if not canon or "murtuza-bharmal.vercel.app" not in canon.group(1):
 
 # ── assets ───────────────────────────────────────────────────────────
 print("\nassets")
+LARGE = {"/scrub.mp4", "/scrub-portrait.mp4", "/banner.mp4", "/banner-portrait.mp4"}
+
 for p, want_type in (
     ("/scrub.mp4", "video/mp4"),
     ("/scrub-portrait.mp4", "video/mp4"),
@@ -72,12 +78,22 @@ for p, want_type in (
     ("/sitemap.xml", "xml"),
     ("/llms.txt", "text/plain"),
 ):
-    st, h, body, _ = fetch(p)
+    # Large media: ask for the first KB only. A full GET of 10+ MB can outrun the
+    # timeout and read as a failure when the file is perfectly healthy.
+    ranged = p in LARGE
+    st, h, body, _ = fetch(p, {"Range": "bytes=0-999"} if ranged else None)
     ctype = h.get("Content-Type", "")
-    size = h.get("Content-Length", "?")
-    ok = st == 200 and want_type in ctype
-    mb = f"{int(size)/1024/1024:.2f} MB" if size.isdigit() else "?"
-    print(f"  {'ok ' if ok else 'FAIL'} {st}  {mb:>9}  {ctype[:28]:<28} {p}")
+    ok = st in ((206, 200) if ranged else (200,)) and want_type in ctype
+
+    if ranged and h.get("Content-Range"):
+        total = h["Content-Range"].split("/")[-1]
+        mb = f"{int(total)/1024/1024:.2f} MB" if total.isdigit() else "?"
+    else:
+        size = h.get("Content-Length", "?")
+        mb = f"{int(size)/1024/1024:.2f} MB" if size.isdigit() else "?"
+
+    print(f"  {'ok ' if ok else 'FAIL'} {st}  {mb:>9}  {ctype[:28]:<28} {p}"
+          f"{'  (ranged)' if ranged else ''}")
     if not ok:
         fails.append(f"{p} -> {st} {ctype}")
 
