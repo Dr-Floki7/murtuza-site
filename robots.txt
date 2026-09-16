@@ -33,4 +33,4 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-Sitemap: https://SITE_URL/sitemap.xml
+Sitemap: https://murtuza.vercel.app/sitemap.xml
