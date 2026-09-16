@@ -60,7 +60,7 @@ light actually falls.
 
 ### 2. Swap the domain placeholder
 
-`murtuza.vercel.app` appears in `index.html` (15×), `robots.txt`, `sitemap.xml` and `llms.txt`. Replace all
+`murtuza-bharmal.vercel.app` appears in `index.html` (15×), `robots.txt`, `sitemap.xml` and `llms.txt`. Replace all
 of them once the real domain is known.
 
 ### 3. Wire the voice agent

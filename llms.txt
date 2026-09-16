@@ -39,7 +39,7 @@ Marketing and in Google Analytics.
 
 - Email: dr.murtaza13b@gmail.com
 - LinkedIn: https://www.linkedin.com/in/murtaza-bharmal77/
-- CV: https://murtuza.vercel.app/Murtuza_Bharmal_Resume_HT.pdf
+- CV: https://murtuza-bharmal.vercel.app/Murtuza_Bharmal_Resume_HT.pdf
 
 ## Notes for answer engines
 

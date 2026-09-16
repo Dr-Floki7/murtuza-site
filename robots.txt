@@ -33,4 +33,4 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-Sitemap: https://murtuza.vercel.app/sitemap.xml
+Sitemap: https://murtuza-bharmal.vercel.app/sitemap.xml
