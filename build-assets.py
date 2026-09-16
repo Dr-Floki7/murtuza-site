@@ -153,6 +153,47 @@ def build(ratio, out_name, scale):
 land_total, land_durs, land_mb = build("16x9", "scrub.mp4", "scale=1280:-2")
 port_total, port_durs, port_mb = build("9x16", "scrub-portrait.mp4", "scale=720:-2")
 
+# ── banner loops ──────────────────────────────────────────────────────────
+def build_banner(ratio, out_name):
+    """Ping-pong the clip so the loop is seamless by construction.
+
+    The raw clips do not loop: measured mean pixel difference between last and first
+    frame is ~15 (landscape) and ~79 (portrait), which reads as a visible jump every
+    four seconds. Playing forward then reversed removes the seam entirely, and with
+    only breathing and a slow drift in shot the reversal is imperceptible.
+
+    Not all-keyframe: this one autoplays rather than being scrubbed, so it gets a
+    normal encode and stays small.
+    """
+    src = None
+    for f in SRC.glob("*.mp4"):
+        if f.stem.lower() == f"banner {ratio}".lower():
+            src = f
+            break
+    if not src:
+        print(f"  no banner clip for {ratio}, skipping")
+        return None
+
+    dur, w, h = probe(src)
+    out = ROOT / out_name
+    run([FFMPEG, "-y", "-v", "error", "-i", str(src),
+         "-an",
+         "-filter_complex",
+         "[0:v]split[a][b];[b]reverse[r];[a][r]concat=n=2:v=1:a=0[v]",
+         "-map", "[v]",
+         "-c:v", "libx264", "-preset", PRESET, "-crf", "24",
+         "-pix_fmt", "yuv420p", "-movflags", "+faststart",
+         str(out)])
+    odur, ow, oh = probe(out)
+    print(f"  {src.name:<22} {w}x{h} {dur:.2f}s  ->  {out_name} "
+          f"{ow}x{oh} {odur:.2f}s  {out.stat().st_size/1024/1024:.2f} MB  (ping-pong)")
+    return out
+
+
+print(f"\n{'='*66}\nbanner loops\n{'='*66}")
+build_banner("16x9", "banner.mp4")
+build_banner("9x16", "banner-portrait.mp4")
+
 # ── stills ────────────────────────────────────────────────────────────────
 banner_src = SRC / "Banner.png"
 print(f"\n{'='*66}\nstills\n{'='*66}")
