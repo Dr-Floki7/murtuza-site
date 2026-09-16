@@ -457,6 +457,53 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
 .panel p{font-size:var(--t-md);color:var(--on-ink-2);max-width:40ch}
 
 /* ═══════════════════════════════════════════════════════════
+   VOICE AGENT — button sits beside the CV, panel is a native dialog
+   ═══════════════════════════════════════════════════════════ */
+.btn--agent{position:relative;overflow:hidden}
+.btn__pulse{
+  position:absolute;left:1.25rem;top:50%;
+  width:.4rem;height:.4rem;border-radius:50%;
+  background:var(--signal-lift);transform:translateY(-50%);
+  box-shadow:0 0 0 0 rgba(123,154,255,.65);
+  animation:agent-pulse 2.4s ease-out infinite;
+}
+.btn--agent{padding-left:2.6rem}
+@keyframes agent-pulse{
+  0%{box-shadow:0 0 0 0 rgba(123,154,255,.6)}
+  70%{box-shadow:0 0 0 .7rem rgba(123,154,255,0)}
+  100%{box-shadow:0 0 0 0 rgba(123,154,255,0)}
+}
+
+.agent-dialog{
+  border:1px solid var(--rule-paper);
+  background:var(--paper);color:var(--on-paper);
+  padding:var(--s-4);
+  width:min(38rem,calc(100vw - 2 * var(--gutter)));
+  max-height:min(80svh,40rem);
+  margin:auto;
+}
+.agent-dialog::backdrop{background:rgba(10,14,20,.72)}
+.agent-dialog__head{
+  display:flex;align-items:start;justify-content:space-between;gap:var(--s-3);
+  margin-bottom:var(--s-2);
+}
+.agent-dialog h2{
+  font-size:var(--t-lg);
+  font-variation-settings:"wdth" 108,"wght" 730;
+  letter-spacing:-.03em;
+}
+.agent-dialog__note{color:var(--on-paper-2);font-size:var(--t-base);max-width:52ch}
+.agent-dialog__close{
+  flex:none;width:2.75rem;height:2.75rem;
+  display:grid;place-items:center;
+  background:none;border:1px solid var(--rule-paper);
+  color:var(--on-paper);cursor:pointer;
+}
+.agent-dialog__close svg{width:1rem;height:1rem}
+.agent-dialog__close:hover{border-color:var(--signal);color:var(--signal)}
+#agent-mount{margin-top:var(--s-3);min-height:4rem}
+
+/* ═══════════════════════════════════════════════════════════
    CLOSE — the signal owns this whole region
    ═══════════════════════════════════════════════════════════ */
 .close{background:var(--signal);color:#fff;padding-block:var(--s-6)}
@@ -657,13 +704,16 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
      ═══════════════════════════════════════════════════════ -->
 <header class="banner on-ink" id="banner" data-track="banner">
   <div class="banner__stage">
-    <picture>
-      <source srcset="banner.webp" type="image/webp">
-      <img class="banner__img" id="banner-img"
-           src="banner.jpg"
-           alt="Three versions of Murtuza Bharmal in one frame: centre, in a navy blazer, looking directly ahead; to his left the same man in a white clinical coat; to his right the same man in a polo shirt holding a phone."
-           fetchpriority="high" decoding="async" width="2560" height="1440">
-    </picture>
+    <!-- The still is the poster, so the first frame paints immediately and the loop
+         layers over it once decoded. If banner.mp4 is absent or blocked, the poster
+         simply stays: no broken state, no layout shift, nothing to fall back to. -->
+    <video class="banner__img" id="banner-film"
+           poster="banner.jpg"
+           muted loop autoplay playsinline webkit-playsinline
+           preload="auto" disablepictureinpicture
+           width="2560" height="1440"
+           role="img"
+           aria-label="Three versions of Murtuza Bharmal in one frame: centre, in a navy blazer, looking directly ahead; to his left the same man in a white clinical coat; to his right the same man in a polo shirt holding a phone."></video>
 
     <div class="banner__veil" id="banner-veil" aria-hidden="true"></div>
 
@@ -684,6 +734,17 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
             </svg>
             Download CV
           </a>
+          <!-- Unhidden by JS only when an agent id is configured, so a half-wired
+               widget never ships as a dead button on a recruiter-facing page. -->
+          <button class="btn btn--line btn--agent" id="agent-open" type="button" hidden>
+            <span class="btn__pulse" aria-hidden="true"></span>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" aria-hidden="true">
+              <path d="M8 2.2v6.1M5.2 4.6v3.2M10.8 4.6v3.2M2.6 6.1v.6M13.4 6.1v.6"/>
+              <path d="M4 11.2a4.6 4.6 0 0 0 8 0M8 13.4v1.2"/>
+            </svg>
+            Ask my AI
+          </button>
           <a class="btn btn--line" href="#contact">Get in touch</a>
         </div>
       </div>
@@ -745,32 +806,61 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
 
       <div class="act__wash" id="wash" aria-hidden="true"></div>
 
+      <!-- Six beats, two per wardrobe stage. Each one carries information the
+           previous one did not; the video supplies the chronology on its own. -->
       <div class="act__ui">
         <div class="panels">
           <section class="panel" data-panel="0" data-on>
-            <span class="label panel__year">2025 — now</span>
-            <h2>Right now, launches.</h2>
+            <span class="label panel__year">Flow Realty · 2025 — now</span>
+            <h2>Go-to-market, end to end.</h2>
             <p>
-              Go-to-market ownership for residential launches. Positioning, pricing,
-              channel rollout and the funnel underneath, end to end.
+              Positioning, launch timelines, pricing and inventory, and the funnel
+              underneath all of it. Five-plus residential launches.
             </p>
           </section>
 
           <section class="panel" data-panel="1" aria-hidden="true">
-            <span class="label panel__year">2022 — 2025</span>
-            <h2>Before that, national scale.</h2>
+            <span class="label panel__year">The scope of it</span>
+            <h2>A team of six. Multi-crore budgets.</h2>
             <p>
-              Xiaomi India. Smartphone, smart TV and AIoT launches across an exclusive
-              retail channel, and the campaigns that drove people into stores.
+              Digital, ATL, BTL and channel partners pulled onto one launch date.
+              CRM, automation and reporting owned in-house rather than outsourced.
             </p>
           </section>
 
           <section class="panel" data-panel="2" aria-hidden="true">
-            <span class="label panel__year">2013 — 2020</span>
-            <h2>And before that, a white coat.</h2>
+            <span class="label panel__year">Xiaomi India · 2022 — 2025</span>
+            <h2>Launches at national scale.</h2>
             <p>
-              Five years of dental training, then practice and 20+ community health
-              camps. Where the understanding of how people decide actually comes from.
+              Smartphone, smart TV and AIoT across an exclusive retail channel, plus
+              the roadshows that carried them to retailers and distributors.
+            </p>
+          </section>
+
+          <section class="panel" data-panel="3" aria-hidden="true">
+            <span class="label panel__year">What it returned</span>
+            <h2>Thirty stores in seven days.</h2>
+            <p>
+              Branding cost down 27%. Cost per lead down 50%. Footfall up 26%.
+              A hundred thousand followers built from nothing.
+            </p>
+          </section>
+
+          <section class="panel" data-panel="4" aria-hidden="true">
+            <span class="label panel__year">2013 — 2020</span>
+            <h2>Before any of it, a clinic.</h2>
+            <p>
+              Bachelor of Dental Surgery, then general practice, then twenty-plus
+              community health camps.
+            </p>
+          </section>
+
+          <section class="panel" data-panel="5" aria-hidden="true">
+            <span class="label panel__year">Which is the point</span>
+            <h2>So healthtech isn't a pivot.</h2>
+            <p>
+              It is the first industry I understood, met with five years of knowing
+              how to take something to market.
             </p>
           </section>
         </div>
@@ -964,6 +1054,23 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
   </section>
 </main>
 
+<!-- Native <dialog>: gets modal focus trapping, Escape-to-close and a backdrop
+     without a line of script or a dependency. -->
+<dialog class="agent-dialog" id="agent-dialog" aria-labelledby="agent-title">
+  <div class="agent-dialog__head">
+    <h2 id="agent-title">Ask about my background.</h2>
+    <button class="agent-dialog__close" id="agent-close" type="button" aria-label="Close">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"
+           stroke-linecap="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+    </button>
+  </div>
+  <p class="agent-dialog__note">
+    Trained on this background and nothing else. It answers questions about my
+    experience, sectors and skills, and declines the rest.
+  </p>
+  <div id="agent-mount"></div>
+</dialog>
+
 <footer class="on-ink">
   <div class="wrap foot">
     <p>© <span id="yr">2026</span> Murtuza Bharmal</p>
@@ -1062,12 +1169,20 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
     queueSweep();
   })();
 
-  /* ── Banner: fade in once decoded. Missing file keeps the lit gradient. ── */
-  var bannerImg = document.getElementById("banner-img");
-  function showBanner(){ bannerImg.classList.add("is-in"); }
-  if (bannerImg.complete && bannerImg.naturalWidth > 0) showBanner();
-  bannerImg.addEventListener("load", showBanner);
-  bannerImg.addEventListener("error", function(){ bannerImg.remove(); });
+  /* ── Banner loop. The poster carries the first paint; this layers the motion on
+        top once it can play. Portrait viewports get the portrait cut. Any failure
+        leaves the poster showing, which is a complete state in itself. ── */
+  var bannerFilm = document.getElementById("banner-film");
+  bannerFilm.classList.add("is-in");        // poster is already visible, so no fade-in gap
+
+  if (!reduced) {
+    bannerFilm.src = window.innerHeight > window.innerWidth
+      ? "banner-portrait.mp4" : "banner.mp4";
+    bannerFilm.addEventListener("loadeddata", function(){
+      var r = bannerFilm.play();
+      if (r && r.catch) r.catch(function(){});   // autoplay refused: poster stands in
+    });
+  }
 
   /* ── Banner reveal: beat one is the photograph alone, beat two writes the
         headline on over it. Copy and veil arrive together, so the image only
@@ -1165,14 +1280,17 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
     return clamp(-act.getBoundingClientRect().top / span, 0, 1);
   }
 
-  /* Bands are calibrated to the real cut, not guessed. Measured by build-assets.py:
+  /* Bands calibrated to the real cut, measured by build-assets.py:
      real estate 0.00-8.00s (progress 0.000-0.363), electronics 8.00-16.00s
-     (0.363-0.726), clinical 16.00-22.04s (0.726-1.000). Each caption is inset from
-     its stage boundary so the film gets moments with no copy over it. */
+     (0.363-0.726), clinical 16.00-22.04s (0.726-1.000).
+     Two beats per stage, with gaps so the film gets moments carrying no copy. */
   function panelFor(p){
-    if (p >= 0.06 && p < 0.32) return 0;   // real estate
-    if (p >= 0.42 && p < 0.68) return 1;   // consumer electronics
-    if (p >= 0.77 && p < 0.92) return 2;   // clinical
+    if (p >= 0.07 && p < 0.18) return 0;   // real estate  — the role
+    if (p >= 0.21 && p < 0.33) return 1;   // real estate  — the scope
+    if (p >= 0.40 && p < 0.52) return 2;   // electronics  — the work
+    if (p >= 0.55 && p < 0.67) return 3;   // electronics  — the results
+    if (p >= 0.74 && p < 0.845) return 4;  // clinical     — the origin
+    if (p >= 0.865 && p < 0.945) return 5; // clinical     — the argument
     return -1;
   }
 
@@ -1187,8 +1305,8 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
     }
     /* lights down on entry, lights up on exit */
     var w = 0;
-    if (p < 0.07)      w = 1 - p / 0.07;
-    else if (p > 0.94) w = (p - 0.94) / 0.06;
+    if (p < 0.055)     w = 1 - p / 0.055;
+    else if (p > 0.955) w = (p - 0.955) / 0.045;
     wash.style.opacity = String(clamp(w, 0, 1));
 
     /* furthest point reached, read by the instrumentation block below */
@@ -1223,6 +1341,59 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
   window.addEventListener("resize", onScroll);
   window.addEventListener("orientationchange", onScroll);
   onScroll();
+})();
+
+/* ══════════════════════════════════════════════════════════
+   VOICE AGENT
+
+   Set AGENT_EMBED to the provider's PUBLIC, domain-locked widget id to turn this
+   on. Until then the button stays hidden rather than shipping as a dead control.
+
+   Never put a secret key here. This file is static and fully public once deployed.
+   Knowledge base and refusal rules belong in the provider's dashboard, server-side,
+   where a visitor cannot read or edit them.
+   ══════════════════════════════════════════════════════════ */
+(function(){
+  "use strict";
+
+  var AGENT_EMBED = "";                 // e.g. an ElevenLabs agent-id
+  var AGENT_TAG   = "elevenlabs-convai";
+  var AGENT_SDK   = "https://unpkg.com/@elevenlabs/convai-widget-embed";
+
+  var openBtn = document.getElementById("agent-open");
+  var dialog  = document.getElementById("agent-dialog");
+  var closeBtn = document.getElementById("agent-close");
+  var mount   = document.getElementById("agent-mount");
+  if (!openBtn || !dialog || !mount) return;
+
+  if (!AGENT_EMBED) return;             // stays hidden, nothing half-built ships
+  openBtn.hidden = false;
+
+  var loaded = false;
+  function mountWidget(){
+    if (loaded) return;
+    loaded = true;
+    var el = document.createElement(AGENT_TAG);
+    el.setAttribute("agent-id", AGENT_EMBED);
+    mount.appendChild(el);
+    var sdk = document.createElement("script");
+    sdk.src = AGENT_SDK;
+    sdk.async = true;
+    document.head.appendChild(sdk);
+  }
+
+  openBtn.addEventListener("click", function(){
+    mountWidget();                      // load on demand, not on page load
+    if (typeof dialog.showModal === "function") dialog.showModal();
+    else dialog.setAttribute("open", "");
+    if (typeof window.va === "function") {
+      window.va("event", { name: "agent_open", data: {} });
+    }
+  });
+  closeBtn.addEventListener("click", function(){ dialog.close(); });
+  dialog.addEventListener("click", function(e){
+    if (e.target === dialog) dialog.close();   // click the backdrop to dismiss
+  });
 })();
 
 /* ══════════════════════════════════════════════════════════

@@ -72,7 +72,15 @@ checks = (
     ("og:image", 'property="og:image"' in s),
     ("twitter:card", 'name="twitter:card"' in s),
     ("meta description", 'name="description"' in s),
-    ("banner alt text", bool(re.search(r'class="banner__img"[^>]*alt="[^"]{40,}"', s, re.S))),
+    # the banner is a <video role="img" aria-label> with a still poster, so accept
+    # either an img alt or the equivalent accessible name on the video
+    ("banner described", bool(
+        re.search(r'class="banner__img"[^>]*alt="[^"]{40,}"', s, re.S)
+        or re.search(r'class="banner__img"[^>]*aria-label="[^"]{40,}"', s, re.S)
+    )),
+    ("banner poster", 'poster="banner.jpg"' in s),
+    ("agent button gated", 'id="agent-open"' in s and "AGENT_EMBED" in s),
+    ("no secret in agent config", 'AGENT_EMBED = ""' in s or "agent-id" in s),
     ("video aria-hidden", bool(re.search(r"<video[^>]*aria-hidden", s))),
     ("skip link", 'class="skip"' in s),
     ("no stale placeholder", "SITE_URL" not in s),
