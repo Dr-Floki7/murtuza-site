@@ -3,12 +3,12 @@
 const { chromium } = require('playwright');
 
 const EXPECT = [
-  { band: [0.07, 0.18],  stage: 'real estate', head: 'Go-to-market, end to end.' },
-  { band: [0.21, 0.33],  stage: 'real estate', head: 'A team of six. Multi-crore budgets.' },
-  { band: [0.40, 0.52],  stage: 'electronics', head: 'Launches at national scale.' },
-  { band: [0.55, 0.67],  stage: 'electronics', head: 'Thirty stores in seven days.' },
-  { band: [0.74, 0.845], stage: 'clinical',    head: "Before any of it, a clinic." },
-  { band: [0.865, 0.945], stage: 'clinical',   head: "So healthtech isn't a pivot." },
+  { band: [0.07, 0.18],   stage: 'real estate', head: 'Now I price buildings.' },
+  { band: [0.21, 0.33],   stage: 'real estate', head: 'The launch is one day.' },
+  { band: [0.40, 0.52],   stage: 'electronics', head: 'Before this, I moved phones.' },
+  { band: [0.55, 0.67],   stage: 'electronics', head: 'You learn to fix it live.' },
+  { band: [0.74, 0.845],  stage: 'clinical',    head: 'I started holding a drill.' },
+  { band: [0.865, 0.945], stage: 'clinical',    head: 'That is where I learned demand.' },
 ];
 
 const stageAt = (t) => (t < 8 ? 'real estate' : t < 16 ? 'electronics' : 'clinical');

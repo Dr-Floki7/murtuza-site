@@ -172,7 +172,7 @@ body{
   color:var(--on-paper);
   font-family:"Archivo",ui-sans-serif,system-ui,sans-serif;
   font-size:var(--t-base);
-  font-variation-settings:"wdth" 100,"wght" 400;
+  font-stretch:100%;font-weight:400;
   line-height:1.6;
   overflow-x:clip;              /* clip, not hidden: preserves position:sticky */
   -webkit-font-smoothing:antialiased;
@@ -180,6 +180,9 @@ body{
 }
 
 img,video,svg{display:block;max-width:100%}
+/* A class with its own `display` beats the hidden attribute's UA rule, which is how
+   the gated agent button leaked onto the page. This wins over any of them. */
+[hidden]{display:none!important}
 h1,h2,h3{margin:0;line-height:1.02;text-wrap:balance}
 p{margin:0;text-wrap:pretty}
 ul,ol,dl,dd{margin:0;padding:0}
@@ -211,16 +214,28 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
 .skip:focus{top:1rem}
 
 .display{
-  font-variation-settings:"wdth" 116,"wght" 800;
+  font-stretch:116%;font-weight:800;
   letter-spacing:-.035em;       /* tracking floor is -.04em */
   line-height:.94;
   font-size:var(--t-display);
 }
+/* TYPE CASE SYSTEM
+   .label — uppercase, tracked. Pure metadata only: dates, single words. Never a
+            phrase, and never a proper noun, which reads as shouting.
+   .meta  — sentence case, lightly tracked. Company names, section tags, anything
+            with words in it.
+   Everything else is sentence case. No all-caps sentences anywhere. */
 .label{
-  font-variation-settings:"wdth" 84,"wght" 650;
+  font-stretch:84%;font-weight:650;
   font-size:var(--t-xs);
   letter-spacing:.15em;
   text-transform:uppercase;
+  font-variant-numeric:tabular-nums;
+}
+.meta{
+  font-stretch:92%;font-weight:600;
+  font-size:var(--t-sm);
+  letter-spacing:.02em;
   font-variant-numeric:tabular-nums;
 }
 
@@ -276,7 +291,7 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
     calc(var(--s-4) + env(safe-area-inset-bottom));
 }
 .mark{
-  font-variation-settings:"wdth" 88,"wght" 650;
+  font-stretch:88%;font-weight:650;
   font-size:var(--t-base);letter-spacing:.03em;
   color:var(--on-ink);
 }
@@ -293,11 +308,32 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
   font-size:var(--t-md);color:var(--on-ink-2);
   max-width:44ch;margin-bottom:var(--s-4);
 }
-/* The first-beat cue sits on its own, centred low, and leaves as the copy arrives. */
-.banner__cue{
-  grid-row:3;justify-self:start;align-self:end;
-  display:flex;align-items:center;gap:.7em;
-  color:var(--on-ink-2);pointer-events:none;
+/* The first-beat cue. Loud on purpose: it is the only instruction on the page. */
+.scrollcue{
+  grid-row:3;justify-self:center;align-self:end;
+  pointer-events:none;
+}
+.scrollcue__pill{
+  display:inline-flex;align-items:center;gap:.75em;
+  padding:.55rem .55rem .55rem 1.1rem;
+  border:1px solid rgba(242,244,247,.28);
+  border-radius:100vmax;
+  background:rgba(10,14,20,.5);
+  backdrop-filter:blur(6px);
+  color:var(--on-ink);
+  animation:cue-rise 2.6s cubic-bezier(.4,0,.2,1) infinite;
+}
+.scrollcue__text{color:var(--on-ink)}
+.scrollcue__chev{
+  display:grid;place-items:center;
+  width:1.85rem;height:1.85rem;flex:none;
+  border-radius:50%;
+  background:var(--signal);color:#fff;
+}
+.scrollcue__chev svg{width:.9rem;height:.9rem}
+@keyframes cue-rise{
+  0%,100%{transform:translateY(0);opacity:.85}
+  50%{transform:translateY(.4rem);opacity:1}
 }
 .cue{
   margin-top:var(--s-4);
@@ -318,7 +354,7 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
   display:inline-flex;align-items:center;justify-content:center;gap:.6em;
   min-height:3rem;min-width:3rem;padding:.9rem 1.6rem;
   font-family:inherit;font-size:var(--t-sm);
-  font-variation-settings:"wdth" 96,"wght" 650;
+  font-stretch:96%;font-weight:650;
   letter-spacing:.01em;text-decoration:none;cursor:pointer;
   border:1px solid transparent;border-radius:0;
   transition:background .18s ease,color .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease;
@@ -339,7 +375,7 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
 
 .lead{
   font-size:var(--t-xl);
-  font-variation-settings:"wdth" 108,"wght" 700;
+  font-stretch:108%;font-weight:700;
   letter-spacing:-.03em;line-height:1.04;
   max-width:26ch;margin-bottom:var(--s-4);
 }
@@ -358,7 +394,7 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
 .row__body{min-width:0}
 .row h3{
   font-size:var(--t-md);
-  font-variation-settings:"wdth" 106,"wght" 720;
+  font-stretch:106%;font-weight:720;
   letter-spacing:-.025em;margin-bottom:var(--s-1);
 }
 .row__where{color:var(--on-paper-2);font-size:var(--t-base);margin-bottom:var(--s-2)}
@@ -384,7 +420,7 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
   break-inside:avoid;padding-block:.7rem;
   border-bottom:1px solid var(--rule-paper);
   font-size:var(--t-base);
-  font-variation-settings:"wdth" 98,"wght" 500;
+  font-stretch:98%;font-weight:500;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -451,7 +487,7 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
 .panel__year{color:var(--on-ink-2);display:block;margin-bottom:var(--s-2)}
 .panel h2{
   font-size:var(--t-lg);
-  font-variation-settings:"wdth" 110,"wght" 750;
+  font-stretch:110%;font-weight:750;
   letter-spacing:-.03em;margin-bottom:var(--s-2);
 }
 .panel p{font-size:var(--t-md);color:var(--on-ink-2);max-width:40ch}
@@ -489,7 +525,7 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
 }
 .agent-dialog h2{
   font-size:var(--t-lg);
-  font-variation-settings:"wdth" 108,"wght" 730;
+  font-stretch:108%;font-weight:730;
   letter-spacing:-.03em;
 }
 .agent-dialog__note{color:var(--on-paper-2);font-size:var(--t-base);max-width:52ch}
@@ -509,7 +545,7 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
 .close{background:var(--signal);color:#fff;padding-block:var(--s-6)}
 .close h2{
   font-size:var(--t-xl);
-  font-variation-settings:"wdth" 112,"wght" 780;
+  font-stretch:112%;font-weight:780;
   letter-spacing:-.035em;max-width:24ch;margin-bottom:var(--s-3);
 }
 .close p{font-size:var(--t-md);color:rgba(255,255,255,.86);max-width:52ch;margin-bottom:var(--s-4)}
@@ -547,10 +583,70 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
 .cred__when{color:var(--on-paper-2)}
 .cred h3{
   font-size:var(--t-md);
-  font-variation-settings:"wdth" 106,"wght" 720;
+  font-stretch:106%;font-weight:720;
   letter-spacing:-.025em;
 }
 .cred__where{color:var(--on-paper-2);font-size:var(--t-base)}
+
+/* ═══════════════════════════════════════════════════════════
+   TIMELINE SPINE — gives the experience rows a structure instead of
+   leaving them as four undifferentiated blocks of text
+   ═══════════════════════════════════════════════════════════ */
+@media (min-width:52rem){
+  .rows--spine .row{position:relative;padding-left:0}
+  .rows--spine .row__when{position:relative;padding-left:1.9rem}
+  /* the vertical run, drawn from the node down */
+  .rows--spine .row__when::before{
+    content:"";position:absolute;left:.3rem;top:1.15em;bottom:calc(-1 * var(--s-4) - 1.15em);
+    width:1px;background:var(--rule-paper);
+  }
+  .rows--spine .row:last-child .row__when::before{display:none}
+  /* the node itself */
+  .rows--spine .row__when::after{
+    content:"";position:absolute;left:0;top:.35em;
+    width:.65rem;height:.65rem;border-radius:50%;
+    background:var(--paper);border:2px solid var(--signal);
+  }
+  .js .rows--spine .row .row__when::after{transform:scale(.4);opacity:0;
+    transition:transform .5s cubic-bezier(.34,1.56,.64,1) .12s,opacity .3s ease .12s}
+  .js .rows--spine .row.in .row__when::after{transform:scale(1);opacity:1}
+}
+
+/* figures pulled out of the prose so the eye catches them */
+.figs{
+  display:flex;flex-wrap:wrap;gap:var(--s-2) var(--s-4);
+  margin-top:var(--s-3);padding-top:var(--s-3);
+  border-top:1px solid var(--rule-paper);
+}
+.fig{display:grid;gap:.1rem}
+.fig b{
+  font-size:var(--t-lg);font-stretch:112%;font-weight:760;
+  letter-spacing:-.035em;line-height:1;color:var(--signal);
+  font-variant-numeric:tabular-nums;
+}
+.fig span{font-size:var(--t-sm);color:var(--on-paper-2)}
+
+/* ═══════════════════════════════════════════════════════════
+   CAPABILITY CLUSTERS — grouped, so the list says something
+   ═══════════════════════════════════════════════════════════ */
+.clusters{
+  margin-top:var(--s-5);
+  display:grid;gap:var(--s-4);grid-template-columns:1fr;
+}
+@media (min-width:40rem){.clusters{grid-template-columns:repeat(2,1fr);gap:var(--s-5)}}
+@media (min-width:68rem){.clusters{grid-template-columns:repeat(4,1fr);gap:var(--s-4)}}
+.cluster{border-top:2px solid var(--signal);padding-top:var(--s-3)}
+.cluster h3{
+  font-size:var(--t-base);font-stretch:104%;font-weight:700;
+  letter-spacing:-.01em;margin-bottom:var(--s-2);
+}
+.cluster li{
+  font-size:var(--t-base);color:var(--on-paper-2);
+  padding-block:.42rem;
+  border-bottom:1px solid var(--rule-paper);
+  transition:color .18s ease,padding-left .18s ease;
+}
+.cluster li:hover{color:var(--signal);padding-left:.35rem}
 
 /* ═══════════════════════════════════════════════════════════
    TICKER — the one perpetually moving element on the page
@@ -572,7 +668,7 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
   display:flex;align-items:center;gap:var(--gap);
   padding-right:var(--gap);
   font-size:var(--t-lg);
-  font-variation-settings:"wdth" 110,"wght" 700;
+  font-stretch:110%;font-weight:700;
   letter-spacing:-.03em;white-space:nowrap;
 }
 .ticker__group i{font-style:normal;color:var(--signal);opacity:.55}
@@ -677,6 +773,28 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
   .ticker__group:nth-child(2){display:none}
 }
 
+/* ── Portrait phones ───────────────────────────────────────────────────────
+   The portrait banner letterboxes the wide clip onto ink, so the image occupies a
+   band across the upper third and the copy gets the space below it. The copy block
+   therefore has a hard height budget: overflow it and the headline climbs back onto
+   the faces, which is exactly what it must not do. */
+@media (max-width:34rem) and (orientation:portrait){
+  .banner{height:180vh}
+  .display{font-size:clamp(2rem,8.6vw,2.75rem)}
+  .banner h1{max-width:18ch;margin-bottom:var(--s-2)}
+  .banner__sub{
+    font-size:var(--t-base);line-height:1.45;
+    max-width:34ch;margin-bottom:var(--s-3);
+  }
+  /* two up, so three actions cost two rows instead of three */
+  .banner__body .actions{gap:.5rem}
+  .banner__body .btn{flex:1 1 auto;min-width:calc(50% - .25rem);padding-inline:1rem}
+  .banner__body .btn:first-child{flex-basis:100%}
+  /* the role suffix wraps awkwardly at this width and adds nothing */
+  .mark span{display:none}
+  .scrollcue__pill{padding-left:.95rem}
+}
+
 /* Short viewports: a laptop window at ~1024x455, or a landscape phone. The copy block
    has to fit inside the stage without crowding the photograph, so the display shrinks
    against viewport height rather than width. */
@@ -721,11 +839,10 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
       <p class="mark">Murtuza Bharmal <span>· GTM &amp; Product Marketing</span></p>
 
       <div class="banner__body" id="banner-copy">
-        <h1 class="display">Three industries.<em>One way of thinking.</em></h1>
+        <h1 class="display">From root canals<em>to ₹500 Cr launches.</em></h1>
         <p class="banner__sub">
-          Go-to-market and product marketing. Five-plus years of launches across real
-          estate and consumer electronics, on top of a clinical career most marketers
-          have only read about.
+          I trained as a dentist, then spent five years learning how to put products
+          in front of people. Go-to-market, now pointed at healthtech.
         </p>
         <div class="actions">
           <a class="btn btn--fill" href="Murtuza_Bharmal_Resume_HT.pdf" download>
@@ -749,7 +866,19 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
         </div>
       </div>
 
-      <p class="banner__cue label" id="banner-cue"><i></i> Scroll</p>
+      <!-- Deliberately loud: without it nobody knows the banner is the start of
+           something rather than the whole page. -->
+      <div class="scrollcue" id="banner-cue">
+        <span class="scrollcue__pill">
+          <span class="scrollcue__text label">Scroll to begin</span>
+          <span class="scrollcue__chev" aria-hidden="true">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 6l4 4 4-4"/>
+            </svg>
+          </span>
+        </span>
+      </div>
     </div>
   </div>
 </header>
@@ -811,56 +940,56 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
       <div class="act__ui">
         <div class="panels">
           <section class="panel" data-panel="0" data-on>
-            <span class="label panel__year">Flow Realty · 2025 — now</span>
-            <h2>Go-to-market, end to end.</h2>
+            <span class="meta panel__year">Flow Realty, today</span>
+            <h2>Now I price buildings.</h2>
             <p>
-              Positioning, launch timelines, pricing and inventory, and the funnel
-              underneath all of it. Five-plus residential launches.
+              A family will think about this for nine months before they commit.
+              My job is to be the reason they stop thinking and act.
             </p>
           </section>
 
           <section class="panel" data-panel="1" aria-hidden="true">
-            <span class="label panel__year">The scope of it</span>
-            <h2>A team of six. Multi-crore budgets.</h2>
+            <span class="meta panel__year">What that actually takes</span>
+            <h2>The launch is one day.</h2>
             <p>
-              Digital, ATL, BTL and channel partners pulled onto one launch date.
-              CRM, automation and reporting owned in-house rather than outsourced.
+              Everything before it is nine months of work aimed at a date that
+              cannot move. Six people, every channel, one deadline.
             </p>
           </section>
 
           <section class="panel" data-panel="2" aria-hidden="true">
-            <span class="label panel__year">Xiaomi India · 2022 — 2025</span>
-            <h2>Launches at national scale.</h2>
+            <span class="meta panel__year">Xiaomi India, before that</span>
+            <h2>Before this, I moved phones.</h2>
             <p>
-              Smartphone, smart TV and AIoT across an exclusive retail channel, plus
-              the roadshows that carried them to retailers and distributors.
+              A launch stops being a campaign when thirty stores open in a week
+              and every one of them needs people through the door on day one.
             </p>
           </section>
 
           <section class="panel" data-panel="3" aria-hidden="true">
-            <span class="label panel__year">What it returned</span>
-            <h2>Thirty stores in seven days.</h2>
+            <span class="meta panel__year">What retail teaches</span>
+            <h2>You learn to fix it live.</h2>
             <p>
-              Branding cost down 27%. Cost per lead down 50%. Footfall up 26%.
-              A hundred thousand followers built from nothing.
+              Cost per lead halved. Footfall up a quarter. None of that came from
+              the plan. It came from reading the numbers daily and moving.
             </p>
           </section>
 
           <section class="panel" data-panel="4" aria-hidden="true">
-            <span class="label panel__year">2013 — 2020</span>
-            <h2>Before any of it, a clinic.</h2>
+            <span class="meta panel__year">And before all of it</span>
+            <h2>I started holding a drill.</h2>
             <p>
-              Bachelor of Dental Surgery, then general practice, then twenty-plus
-              community health camps.
+              Root canals, extractions, twenty community camps. Nobody has ever
+              wanted to be in that chair.
             </p>
           </section>
 
           <section class="panel" data-panel="5" aria-hidden="true">
-            <span class="label panel__year">Which is the point</span>
-            <h2>So healthtech isn't a pivot.</h2>
+            <span class="meta panel__year">Which is the whole point</span>
+            <h2>That is where I learned demand.</h2>
             <p>
-              It is the first industry I understood, met with five years of knowing
-              how to take something to market.
+              A patient in real pain will still put it off for months. Once you
+              have sat across from that, no funnel surprises you.
             </p>
           </section>
         </div>
@@ -878,25 +1007,24 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
         Real estate taught me how to sell something a family thinks about for months.
       </p>
 
-      <div class="rows">
+      <div class="rows rows--spine">
         <article class="row">
           <p class="row__when label">2025 — now</p>
           <div class="row__body">
             <h3>Go-To-Market Manager</h3>
             <p class="row__where">Flow Realty</p>
             <p>
-              End-to-end go-to-market for a slate of residential launches: positioning,
-              launch timelines, and rollout across digital, ATL, BTL and channel-partner
-              ecosystems. Leading a team of six plus the agency and vendor ecosystem.
+              I own the plan from the first market study to the last booking:
+              positioning, the launch calendar, pricing and inventory, and the rollout
+              across digital, ATL, BTL and channel partners. Six people report into it,
+              plus the agency and vendor side.
             </p>
-            <ul>
-              <li>Market research, ICP definition, segmentation and competitor benchmarking</li>
-              <li>Multi-crore annual marketing budgets, optimised by channel and ROI</li>
-              <li>Pricing and inventory strategy tied to live demand</li>
-              <li>CRM implementation and funnel ownership: workflows, automation, reporting</li>
-              <li>Sales enablement through pitch decks, messaging and full-funnel insight</li>
-              <li>AI-led engagement: chatbots and automated nurture funnels</li>
-            </ul>
+            <div class="figs">
+              <span class="fig"><b>₹500 Cr+</b><span>Launch-phase revenue</span></span>
+              <span class="fig"><b>₹30 Cr+</b><span>Annual budget owned</span></span>
+              <span class="fig"><b>5+</b><span>Projects taken to market</span></span>
+              <span class="fig"><b>6</b><span>People in the team</span></span>
+            </div>
           </div>
         </article>
 
@@ -906,18 +1034,17 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
             <h3>Senior Specialist, Marketing</h3>
             <p class="row__where">Xiaomi India</p>
             <p>
-              Retail planning for Xiaomi's exclusive channel, covering smartphone,
-              smart TV and AIoT launches and the roadshows that carried them to
-              retailers, distributors and customers.
+              Retail planning for the exclusive channel. Smartphone, smart TV and AIoT
+              launches, the roadshows that carried them to retailers and distributors,
+              and the online-to-offline campaigns that put people inside stores.
             </p>
-            <ul>
-              <li>30 exclusive store openings delivered end to end inside 7 days</li>
-              <li>27% reduction in branding cost</li>
-              <li>50% lower cost per lead and a 26% footfall increase through O2O campaigns</li>
-              <li>100K social followers built across the exclusive channel</li>
-              <li>Mi Hunt, the LOTR premiere, Photography Masterclass, Smart Home League, Diwali with Mi</li>
-              <li>ATL through cinema, radio and digital OOH in premium RWA locations</li>
-            </ul>
+            <div class="figs">
+              <span class="fig"><b>30</b><span>Stores opened in 7 days</span></span>
+              <span class="fig"><b>−50%</b><span>Cost per lead</span></span>
+              <span class="fig"><b>+26%</b><span>Store footfall</span></span>
+              <span class="fig"><b>−27%</b><span>Branding cost</span></span>
+              <span class="fig"><b>100K</b><span>Community built</span></span>
+            </div>
           </div>
         </article>
 
@@ -927,23 +1054,32 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
             <h3>Business Manager</h3>
             <p class="row__where">Forrum Enterprise, pharmaceutical distribution</p>
             <p>
-              Grew the customer base 23% and revenue 18% while managing inventory and
-              supplier coordination, with end-to-end accountability for safe and timely
-              pharmaceutical delivery.
+              Ran the commercial side of a pharma distributor: inventory, supplier
+              coordination, and accountability for getting medicine where it needed to
+              be, on time and intact.
             </p>
+            <div class="figs">
+              <span class="fig"><b>+23%</b><span>Customer base</span></span>
+              <span class="fig"><b>+18%</b><span>Revenue</span></span>
+            </div>
           </div>
         </article>
 
         <article class="row">
           <p class="row__when label">2018 — 2020</p>
           <div class="row__body">
-            <h3>Clinical practice &amp; community outreach</h3>
+            <h3>Clinical practice</h3>
             <p class="row__where">General dentistry</p>
             <p>
-              Practised general dentistry and patient care, and organised 20+ dental
-              health camps and outreach programmes. Where the understanding of patient
-              decision journeys and healthcare ecosystem dynamics actually comes from.
+              Treated patients, then went out and found them. Twenty-plus community
+              dental camps, which is a demand generation problem wearing a stethoscope:
+              people who need the thing, do not want the thing, and have to choose it
+              anyway.
             </p>
+            <div class="figs">
+              <span class="fig"><b>5 yrs</b><span>Clinical training</span></span>
+              <span class="fig"><b>20+</b><span>Community camps run</span></span>
+            </div>
           </div>
         </article>
       </div>
@@ -957,28 +1093,48 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
         Strategy that survives contact with a launch calendar, and the operational
         detail to ship it on the date it was promised.
       </p>
-      <ul class="index">
-        <li data-stagger>Go-to-market strategy</li>
-        <li data-stagger>Product positioning</li>
-        <li data-stagger>Product launches</li>
-        <li data-stagger>Market research</li>
-        <li data-stagger>ICP &amp; segmentation</li>
-        <li data-stagger>Competitor benchmarking</li>
-        <li data-stagger>Demand generation</li>
-        <li data-stagger>Full-funnel performance</li>
-        <li data-stagger>CRM &amp; marketing automation</li>
-        <li data-stagger>Budget ownership</li>
-        <li data-stagger>Pricing strategy</li>
-        <li data-stagger>Sales enablement</li>
-        <li data-stagger>Digital marketing</li>
-        <li data-stagger>Google Ads &amp; Analytics</li>
-        <li data-stagger>ATL &amp; BTL activations</li>
-        <li data-stagger>OOH &amp; on-ground branding</li>
-        <li data-stagger>Event planning &amp; execution</li>
-        <li data-stagger>Vendor management &amp; negotiation</li>
-        <li data-stagger>Cross-functional leadership</li>
-        <li data-stagger>AI-led engagement</li>
-      </ul>
+      <div class="clusters">
+        <div class="cluster" data-stagger>
+          <h3>Deciding what to say</h3>
+          <ul>
+            <li>Go-to-market strategy</li>
+            <li>Product positioning</li>
+            <li>Market research</li>
+            <li>ICP &amp; segmentation</li>
+            <li>Competitor benchmarking</li>
+          </ul>
+        </div>
+        <div class="cluster" data-stagger>
+          <h3>Getting it in front of people</h3>
+          <ul>
+            <li>Demand generation</li>
+            <li>Digital marketing</li>
+            <li>Google Ads &amp; Analytics</li>
+            <li>ATL &amp; BTL activations</li>
+            <li>OOH &amp; on-ground branding</li>
+          </ul>
+        </div>
+        <div class="cluster" data-stagger>
+          <h3>Making it convert</h3>
+          <ul>
+            <li>Full-funnel performance</li>
+            <li>CRM &amp; marketing automation</li>
+            <li>Pricing strategy</li>
+            <li>Sales enablement</li>
+            <li>AI-led engagement</li>
+          </ul>
+        </div>
+        <div class="cluster" data-stagger>
+          <h3>Actually shipping it</h3>
+          <ul>
+            <li>Product launches</li>
+            <li>Budget ownership</li>
+            <li>Event planning &amp; execution</li>
+            <li>Vendor management</li>
+            <li>Cross-functional leadership</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1110,7 +1266,7 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
     });
 
     /* index-in-parent for staggered groups */
-    document.querySelectorAll(".index, .creds").forEach(function(group){
+    document.querySelectorAll(".clusters, .creds").forEach(function(group){
       Array.prototype.forEach.call(group.children, function(child, i){
         child.style.setProperty("--i", i);
       });
@@ -1174,6 +1330,12 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
         leaves the poster showing, which is a complete state in itself. ── */
   var bannerFilm = document.getElementById("banner-film");
   bannerFilm.classList.add("is-in");        // poster is already visible, so no fade-in gap
+
+  /* Portrait gets a poster matching its letterboxed framing, otherwise the 16:9
+     still would crop to a close-up and then jump when the wide loop arrives. */
+  if (window.innerHeight > window.innerWidth) {
+    bannerFilm.setAttribute("poster", "banner-portrait.jpg");
+  }
 
   if (!reduced) {
     bannerFilm.src = window.innerHeight > window.innerWidth
@@ -1260,6 +1422,33 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
     film.preload = "auto";
     film.src = CUT;
   }
+
+  /* ── Mobile unlock ──────────────────────────────────────────────────
+     iOS Safari and Chrome on Android will not decode frames for a video that
+     has never played, so assigning currentTime does nothing and the film sits
+     frozen on its first frame while the captions change around it. The fix is
+     one real play() inside a user gesture, immediately paused: that promotes
+     the element to a decodable state, after which seeking works normally.
+     Harmless on desktop, where it is already decodable. ──────────────── */
+  var unlocked = false;
+  function unlock(){
+    if (unlocked) return;
+    unlocked = true;
+    requestFilm();
+    var p = film.play();
+    if (p && p.then) {
+      p.then(function(){ film.pause(); try { film.currentTime = current; } catch (e) {} })
+       .catch(function(){});
+    } else {
+      try { film.pause(); } catch (e) {}
+    }
+    ["touchstart","pointerdown","click","keydown","wheel"].forEach(function(ev){
+      window.removeEventListener(ev, unlock, true);
+    });
+  }
+  ["touchstart","pointerdown","click","keydown","wheel"].forEach(function(ev){
+    window.addEventListener(ev, unlock, { capture:true, passive:true });
+  });
   if ("IntersectionObserver" in window) {
     var io = new IntersectionObserver(function(entries){
       if (entries.some(function(e){ return e.isIntersecting; })) { requestFilm(); io.disconnect(); }
@@ -1271,6 +1460,7 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
 
   /* ── Scrub engine ──────────────────────────────────────── */
   var target = 0, current = 0, ready = false, ticking = false, shown = -1;
+  var seekProven = false;
 
   function clamp(v,lo,hi){ return v < lo ? lo : v > hi ? hi : v; }
 
@@ -1327,6 +1517,10 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
     if (Math.abs(target - current) < 0.004) { current = target; ticking = false; }
     try { film.currentTime = current; }
     catch (e) { ticking = false; return; }
+    /* A seek that never lands means the decoder is still locked. Retry the unlock
+       once rather than leaving the film stuck on frame one. */
+    if (!seekProven && current > 0.4 && film.currentTime < 0.1) unlock();
+    else if (film.currentTime > 0.2) seekProven = true;
     if (ticking) requestAnimationFrame(tick);
   }
 

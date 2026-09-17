@@ -48,6 +48,23 @@ ORDER = [
     ("Dental",      "clinical, 2013 to 2020"),
 ]
 
+# Google Flow stamps a four-pointed sparkle into the lower right of every clip.
+# delogo interpolates the region from its border, which is clean here because the
+# area behind it is dark and soft in all six clips. Boxes are per source resolution.
+DELOGO = {
+    (1280, 720):  "delogo=x=1108:y=558:w=94:h=88",
+    (720, 1280):  "delogo=x=562:y=1116:w=96:h=90",
+}
+
+
+def strip_watermark(w, h):
+    """Filter string for this resolution, or empty if we have no box for it."""
+    f = DELOGO.get((w, h))
+    if not f:
+        print(f"  WARNING: no watermark box for {w}x{h}, shipping unstripped")
+        return ""
+    return f
+
 
 def find(name):
     """winget modified PATH but this shell has not been restarted."""
@@ -125,11 +142,15 @@ def build(ratio, out_name, scale):
     total, jw, jh = probe(joined)
     print(f"  joined: {jw}x{jh}  {total:.2f}s")
 
+    # strip the generator watermark before scaling, while we still know the source size
+    wm = strip_watermark(jw, jh)
+    vf = ",".join([f for f in (wm, scale) if f])
+
     out = ROOT / out_name
     for crf in CRF_LADDER:
         run([FFMPEG, "-y", "-v", "error", "-i", str(joined),
              "-an",                                   # audio stripped, page never needs it
-             "-vf", scale,
+             "-vf", vf,
              "-c:v", "libx264", "-preset", PRESET, "-crf", str(crf),
              "-pix_fmt", "yuv420p",
              "-x264-params", "keyint=1:min-keyint=1:scenecut=0",
@@ -154,61 +175,99 @@ land_total, land_durs, land_mb = build("16x9", "scrub.mp4", "scale=1280:-2")
 port_total, port_durs, port_mb = build("9x16", "scrub-portrait.mp4", "scale=720:-2")
 
 # ── banner loops ──────────────────────────────────────────────────────────
-def build_banner(ratio, out_name):
-    """Ping-pong the clip so the loop is seamless by construction.
+INK = "0x0A0E14"          # must match --ink in index.html
 
-    The raw clips do not loop: measured mean pixel difference between last and first
-    frame is ~15 (landscape) and ~79 (portrait), which reads as a visible jump every
-    four seconds. Playing forward then reversed removes the seam entirely, and with
-    only breathing and a slow drift in shot the reversal is imperceptible.
 
-    Not all-keyframe: this one autoplays rather than being scrubbed, so it gets a
-    normal encode and stays small.
+def build_banner(out_name, portrait=False):
+    """Ping-pong the banner clip so the loop is seamless by construction.
+
+    The raw clips do not loop. Measured mean pixel difference between last and first
+    frame was ~15 (landscape) and ~79 (portrait): a visible jump every four seconds,
+    which is worse than no motion at all on a hero. Forward-then-reversed removes the
+    seam by definition, and with only breathing and a slow drift in shot the reversal
+    is imperceptible.
+
+    For portrait, the supplied 9:16 clip is a tight close-up that loses the whole
+    three-clone idea, so the wide clip is letterboxed onto an ink canvas instead. That
+    keeps all three figures visible on a phone and leaves clean ground for the copy.
+
+    Normal encode, not all-keyframe: this autoplays rather than being scrubbed.
     """
     src = None
     for f in SRC.glob("*.mp4"):
-        if f.stem.lower() == f"banner {ratio}".lower():
+        if f.stem.lower() == "banner 16x9":
             src = f
             break
     if not src:
-        print(f"  no banner clip for {ratio}, skipping")
+        print("  no landscape banner clip found, skipping")
         return None
 
     dur, w, h = probe(src)
+    wm = strip_watermark(w, h)
+
+    if portrait:
+        # 720x1280 canvas, wide clip sitting in the upper portion, ink below for copy
+        vw, vh = 720, round(720 * h / w / 2) * 2
+        y = 150
+        pre = (f"{wm}," if wm else "") + \
+              f"scale={vw}:{vh}:flags=lanczos," \
+              f"pad=720:1280:0:{y}:color={INK}"
+    else:
+        pre = (f"{wm}," if wm else "") + "scale=1280:-2:flags=lanczos"
+
     out = ROOT / out_name
     run([FFMPEG, "-y", "-v", "error", "-i", str(src),
          "-an",
          "-filter_complex",
-         "[0:v]split[a][b];[b]reverse[r];[a][r]concat=n=2:v=1:a=0[v]",
+         f"[0:v]{pre},split[a][b];[b]reverse[r];[a][r]concat=n=2:v=1:a=0[v]",
          "-map", "[v]",
          "-c:v", "libx264", "-preset", PRESET, "-crf", "24",
          "-pix_fmt", "yuv420p", "-movflags", "+faststart",
          str(out)])
     odur, ow, oh = probe(out)
+    note = "ping-pong, letterboxed on ink" if portrait else "ping-pong"
     print(f"  {src.name:<22} {w}x{h} {dur:.2f}s  ->  {out_name} "
-          f"{ow}x{oh} {odur:.2f}s  {out.stat().st_size/1024/1024:.2f} MB  (ping-pong)")
+          f"{ow}x{oh} {odur:.2f}s  {out.stat().st_size/1024/1024:.2f} MB  ({note})")
     return out
 
 
 print(f"\n{'='*66}\nbanner loops\n{'='*66}")
-build_banner("16x9", "banner.mp4")
-build_banner("9x16", "banner-portrait.mp4")
+build_banner("banner.mp4")
+build_banner("banner-portrait.mp4", portrait=True)
 
 # ── stills ────────────────────────────────────────────────────────────────
 banner_src = SRC / "Banner.png"
 print(f"\n{'='*66}\nstills\n{'='*66}")
 if banner_src.exists():
+    _, bw, bh = probe(banner_src)
+    # the still carries the same generator watermark as the clips
+    bwm = DELOGO.get((bw, bh))
+    if not bwm:
+        # scale the 1280x720 box to whatever the still actually is
+        sx, sy = bw / 1280, bh / 720
+        bwm = (f"delogo=x={int(1108*sx)}:y={int(558*sy)}"
+               f":w={int(94*sx)}:h={int(88*sy)}")
+    print(f"  still is {bw}x{bh}, watermark box: {bwm}")
+
     run([FFMPEG, "-y", "-v", "error", "-i", str(banner_src),
-         "-vf", "scale=2560:-2:flags=lanczos", "-q:v", "3",
+         "-vf", f"{bwm},scale=2560:-2:flags=lanczos", "-q:v", "3",
          str(ROOT / "banner.jpg")])
     run([FFMPEG, "-y", "-v", "error", "-i", str(banner_src),
-         "-vf", "scale=2560:-2:flags=lanczos", "-quality", "82",
+         "-vf", f"{bwm},scale=2560:-2:flags=lanczos", "-quality", "82",
          str(ROOT / "banner.webp")])
     # social preview: crop to 1200x630 around the centre figure
     run([FFMPEG, "-y", "-v", "error", "-i", str(banner_src),
-         "-vf", "scale=1200:-2:flags=lanczos,crop=1200:630:0:(ih-630)/2",
+         "-vf", f"{bwm},scale=1200:-2:flags=lanczos,crop=1200:630:0:(ih-630)/2",
          "-q:v", "3", str(ROOT / "og-cover.jpg")])
-    for f in ("banner.jpg", "banner.webp", "og-cover.jpg"):
+
+    # portrait poster: same letterbox geometry as banner-portrait.mp4, so the poster
+    # does not crop to a close-up and then visibly jump when the loop arrives
+    pvh = round(720 * bh / bw / 2) * 2
+    run([FFMPEG, "-y", "-v", "error", "-i", str(banner_src),
+         "-vf", f"{bwm},scale=720:{pvh}:flags=lanczos,"
+                f"pad=720:1280:0:150:color={INK}",
+         "-q:v", "4", str(ROOT / "banner-portrait.jpg")])
+    for f in ("banner.jpg", "banner.webp", "og-cover.jpg", "banner-portrait.jpg"):
         p = ROOT / f
         _, w, h = probe(p)
         print(f"  {f:<16} {w}x{h}  {p.stat().st_size/1024:7.1f} KB")
