@@ -10,7 +10,7 @@
 */
 const { chromium } = require('playwright');
 
-const URL = 'http://127.0.0.1:8099/index.html';
+const URL = process.argv[2] || 'http://127.0.0.1:8099/index.html';
 
 (async () => {
   const browser = await chromium.launch({

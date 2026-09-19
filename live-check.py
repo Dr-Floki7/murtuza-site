@@ -40,7 +40,7 @@ else:
 
 print("\nis this the real page?")
 for label, probe in (
-    ("headline", "Three industries"),
+    ("headline", "From root canals"),
     ("banner element", 'class="banner__img"'),
     ("banner poster", 'poster="banner.jpg"'),
     ("JSON-LD", "application/ld+json"),
@@ -64,11 +64,14 @@ if not canon or "murtuza-bharmal.vercel.app" not in canon.group(1):
 
 # ── assets ───────────────────────────────────────────────────────────
 print("\nassets")
-LARGE = {"/scrub.mp4", "/scrub-portrait.mp4", "/banner.mp4", "/banner-portrait.mp4"}
+LARGE = {"/scrub.mp4", "/scrub-portrait.mp4", "/scrub-mobile.mp4",
+         "/scrub-mobile-landscape.mp4", "/banner.mp4", "/banner-portrait.mp4"}
 
 for p, want_type in (
     ("/scrub.mp4", "video/mp4"),
     ("/scrub-portrait.mp4", "video/mp4"),
+    ("/scrub-mobile.mp4", "video/mp4"),
+    ("/scrub-mobile-landscape.mp4", "video/mp4"),
     ("/banner.webp", "image/webp"),
     ("/banner.jpg", "image/jpeg"),
     ("/og-cover.jpg", "image/jpeg"),
