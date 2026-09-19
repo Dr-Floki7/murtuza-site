@@ -158,8 +158,20 @@ const SHORT = [
       beat1, beat2,
     };
 
-    // the video element must fill its viewport at this ratio
+    // Desktop keeps the scrub video; mobile uses three native-playback scenes.
     r.videoCovers = await page.evaluate(() => {
+      const mobile = window.matchMedia('(max-width:48rem), (pointer:coarse)').matches &&
+        !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (mobile) {
+        const scenes = [...document.querySelectorAll('.mobile-scene')];
+        const act = document.getElementById('act');
+        return {
+          ok: scenes.length === 3 && getComputedStyle(act).display === 'none',
+          w: window.innerWidth, h: window.innerHeight,
+          fit: 'native-story',
+          scenes: scenes.length,
+        };
+      }
       const v = document.querySelector('.act__video');
       const b = v.getBoundingClientRect();
       return {

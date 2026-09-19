@@ -174,13 +174,36 @@ def build(ratio, out_name, scale):
 land_total, land_durs, land_mb = build("16x9", "scrub.mp4", "scale=1280:-2")
 port_total, port_durs, port_mb = build("9x16", "scrub-portrait.mp4", "scale=720:-2")
 
-# Phones do not need a 720x1280, 24fps all-intra stream. Their CSS viewport is
-# typically 360-430px wide and mobile decoders pay for every one of those pixels.
-# 540px at 18fps cuts decode work by ~58% while staying above display resolution.
-mobile_land_total, _, mobile_land_mb = build(
-    "16x9", "scrub-mobile-landscape.mp4", "fps=18,scale=540:-2")
-mobile_port_total, _, mobile_port_mb = build(
-    "9x16", "scrub-mobile.mp4", "fps=18,scale=540:-2")
+# ── mobile story stages ───────────────────────────────────────────────────
+def build_story_stage(stem, out_name):
+    """Normal-GOP mobile encode for native playback, not seeking.
+
+    Mobile browsers are excellent at playing sequential H.264 and poor at random
+    frame-by-frame seeks during a touch scroll. These files use the hardware decoder
+    as intended. Each scene loads only as it approaches the viewport.
+    """
+    src = resolve(stem, "9x16")
+    dur, w, h = probe(src)
+    wm = strip_watermark(w, h)
+    vf = ",".join(f for f in (wm, "scale=540:-2:flags=lanczos") if f)
+    out = ROOT / out_name
+    run([FFMPEG, "-y", "-v", "error", "-i", str(src),
+         "-an", "-vf", vf,
+         "-c:v", "libx264", "-preset", PRESET, "-crf", "24",
+         "-pix_fmt", "yuv420p", "-g", "48", "-keyint_min", "24",
+         "-movflags", "+faststart", str(out)])
+    odur, ow, oh = probe(out)
+    mb = out.stat().st_size / 1024 / 1024
+    print(f"  {src.name:<24} -> {out_name:<28} {ow}x{oh} {odur:.2f}s {mb:.2f} MB")
+    return mb
+
+
+print(f"\n{'='*66}\nmobile native-playback story\n{'='*66}")
+story_sizes = [
+    build_story_stage("Real estate", "story-realestate.mp4"),
+    build_story_stage("Mobile", "story-electronics.mp4"),
+    build_story_stage("Dental", "story-dental.mp4"),
+]
 
 # ── banner loops ──────────────────────────────────────────────────────────
 INK = "0x0A0E14"          # must match --ink in index.html
@@ -305,5 +328,4 @@ for i, (stem, s, e) in enumerate(bounds):
 
 print(f"\ndesktop/tablet shipped video: {land_mb:.1f} MB + {port_mb:.1f} MB "
       f"(one per device, never both)")
-print(f"mobile shipped video: {mobile_land_mb:.1f} MB + {mobile_port_mb:.1f} MB "
-      f"(one per device, never both)")
+print(f"mobile story stages: {sum(story_sizes):.1f} MB total; loaded one scene at a time")

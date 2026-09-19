@@ -748,6 +748,24 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
 }
 
 /* ═══════════════════════════════════════════════════════════
+   MOBILE NATIVE STORY — sequential playback, no frame seeking
+   ═══════════════════════════════════════════════════════════ */
+.mobile-story{display:none}
+@media (prefers-reduced-motion:no-preference) and (max-width:48rem),
+       (prefers-reduced-motion:no-preference) and (pointer:coarse){
+  .act{display:none}
+  .mobile-story{display:block;background:var(--ink);color:var(--on-ink)}
+  .mobile-scene{min-height:100svh;position:relative;display:grid;align-items:end;overflow:hidden}
+  .mobile-scene__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;transition:opacity .35s ease}
+  .mobile-scene.is-ready .mobile-scene__video{opacity:1}
+  .mobile-scene::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(to top,rgba(10,14,20,.94),rgba(10,14,20,.16) 65%,rgba(10,14,20,.3))}
+  .mobile-scene__copy{position:relative;z-index:1;padding:var(--s-5) var(--gutter) calc(var(--s-6) + env(safe-area-inset-bottom));max-width:38rem}
+  .mobile-scene__copy .meta{display:block;color:var(--signal-lift);margin-bottom:var(--s-2)}
+  .mobile-scene__copy h2{font-size:var(--t-lg);font-stretch:110%;font-weight:750;letter-spacing:-.03em;margin-bottom:var(--s-2)}
+  .mobile-scene__copy p{font-size:var(--t-base);color:var(--on-ink-2);max-width:36ch}
+}
+
+/* ═══════════════════════════════════════════════════════════
    REDUCED MOTION — no scrub at all, every stage readable
    ═══════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion:reduce){
@@ -1006,6 +1024,35 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
     </div>
   </section>
   <!-- lights up -->
+
+  <!-- Mobile uses native sequential playback instead of frame-seeking. This keeps the
+       same story and copy while letting the phone's hardware decoder do its job. -->
+  <section class="mobile-story on-ink" id="mobile-story" data-track="film" aria-label="Career story">
+    <article class="mobile-scene">
+      <video class="mobile-scene__video" muted playsinline preload="none" poster="banner-portrait.jpg" data-src="story-realestate.mp4" aria-hidden="true"></video>
+      <div class="mobile-scene__copy">
+        <span class="meta">Flow Realty, today</span>
+        <h2>Now I price buildings.</h2>
+        <p>A family will think about this for nine months before they commit. My job is to be the reason they stop thinking and act.</p>
+      </div>
+    </article>
+    <article class="mobile-scene">
+      <video class="mobile-scene__video" muted playsinline preload="none" poster="banner-portrait.jpg" data-src="story-electronics.mp4" aria-hidden="true"></video>
+      <div class="mobile-scene__copy">
+        <span class="meta">Xiaomi India, before that</span>
+        <h2>Before this, I moved phones.</h2>
+        <p>A launch stops being a campaign when thirty stores open in a week and every one of them needs people through the door on day one.</p>
+      </div>
+    </article>
+    <article class="mobile-scene">
+      <video class="mobile-scene__video" muted playsinline preload="none" poster="banner-portrait.jpg" data-src="story-dental.mp4" aria-hidden="true"></video>
+      <div class="mobile-scene__copy">
+        <span class="meta">And before all of it</span>
+        <h2>I started holding a drill.</h2>
+        <p>Root canals, extractions, twenty community camps. Nobody has ever wanted to be in that chair.</p>
+      </div>
+    </article>
+  </section>
 
   <section class="sheet on-paper" aria-labelledby="arc-h" data-track="experience">
     <div class="wrap">
@@ -1418,6 +1465,32 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
     window.addEventListener("orientationchange", frame);
     frame();
   })();
+
+  /* Mobile story: normal playback as each scene enters, no sticky section and no
+     currentTime writes. The phone's hardware decoder handles sequential playback. */
+  var MOBILE_STORY = window.matchMedia("(max-width:48rem), (pointer:coarse)").matches && !reduced;
+  if (MOBILE_STORY) {
+    var scenes = Array.prototype.slice.call(document.querySelectorAll(".mobile-scene"));
+    var sceneObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        var scene = entry.target;
+        var video = scene.querySelector(".mobile-scene__video");
+        if (entry.isIntersecting) {
+          if (!video.src) {
+            video.src = video.dataset.src;
+            video.load();
+          }
+          scene.classList.add("is-ready");
+          var play = video.play();
+          if (play && play.catch) play.catch(function(){});
+        } else {
+          video.pause();
+        }
+      });
+    }, { threshold:0.55 });
+    scenes.forEach(function(scene){ sceneObserver.observe(scene); });
+    return;
+  }
 
   var act    = document.getElementById("act");
   var film   = document.getElementById("film");
