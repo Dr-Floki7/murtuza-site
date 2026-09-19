@@ -13,7 +13,7 @@ import pymupdf
 
 sys.stdout.reconfigure(encoding="utf8")
 
-PROBE = """
+PROBE = r"""
 const {chromium} = require('playwright');
 (async () => {
   const b = await chromium.launch({channel:'chrome'});

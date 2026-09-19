@@ -35,6 +35,19 @@ const SHORT = [
     });
     await page.evaluate(() => document.activeElement.blur());
 
+    /* Capture the banner's first beat before this audit scrolls anywhere else.
+       The reveal is intentionally one-way and removes its listener at completion,
+       so scrolling to the film and back is not the initial state. */
+    const beat1 = await page.evaluate(() => {
+      const stage = document.querySelector('.banner__stage').getBoundingClientRect();
+      const copy = getComputedStyle(document.getElementById('banner-copy'));
+      return {
+        stageFills: stage.height >= window.innerHeight - 2,
+        copyOpacity: parseFloat(copy.opacity),
+        stageH: Math.round(stage.height), vh: window.innerHeight,
+      };
+    });
+
     const r = await page.evaluate(() => {
       const out = {
         docW: document.documentElement.scrollWidth,
@@ -119,21 +132,8 @@ const SHORT = [
       return { visible: on.length, text: on[0] ? on[0].querySelector('h2').textContent.trim() : null };
     });
 
-    /* Banner is a two-beat reveal now: beat one is the photograph alone, beat two
-       writes the copy on. So assert the image owns the first screen with the copy
-       still hidden, then that the copy fully arrives and fits after scrolling. */
-    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
-    await new Promise((res) => setTimeout(res, 200));
-    const beat1 = await page.evaluate(() => {
-      const stage = document.querySelector('.banner__stage').getBoundingClientRect();
-      const copy = getComputedStyle(document.getElementById('banner-copy'));
-      return {
-        stageFills: stage.height >= window.innerHeight - 2,
-        copyOpacity: parseFloat(copy.opacity),
-        stageH: Math.round(stage.height), vh: window.innerHeight,
-      };
-    });
-
+    /* Banner is a two-beat reveal: beat one was captured above before any scroll;
+       beat two writes the copy on and must fit inside the viewport. */
     await page.evaluate(() => {
       const b = document.getElementById('banner');
       window.scrollTo({ top: (b.offsetHeight - window.innerHeight) * 0.75, behavior: 'instant' });

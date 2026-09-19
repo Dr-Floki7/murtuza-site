@@ -57,8 +57,18 @@ and prints the stage boundaries as scroll fractions.
 If clip durations change, update the bands in `panelFor()` in `index.html` to the fractions the
 script prints. Current cut: real estate 0.00–8.00s, electronics 8.00–16.00s, clinical 16.00–22.04s.
 
-Portrait viewports are served `scrub-portrait.mp4`, chosen in JS at load. Not via `<source media>`,
-whose `media` attribute is evaluated only once and is unevenly supported.
+Portrait desktop/tablet viewports are served `scrub-portrait.mp4`. Phones and coarse-pointer
+devices get dedicated 540px, 18fps cuts: `scrub-mobile.mp4` in portrait and
+`scrub-mobile-landscape.mp4` in landscape. They preserve the 22-second story while reducing decode
+work by roughly 58% versus the old 720×1280, 24fps portrait stream.
+
+Mobile also uses a shorter 430vh act (about 2,785px of travel on a 390×844 phone, down from
+about 5,064px) and one direct seek per animation frame. Desktop retains the smoother lerp because
+its decoder has the headroom. The animated banner pauses when offscreen so it never competes with
+the scrub film for a phone's video decoder.
+
+Cuts are selected once in JS at load, not via `<source media>`, whose `media` attribute is
+evaluated only once and is unevenly supported.
 
 ## Engagement tracking
 

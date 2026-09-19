@@ -19,13 +19,13 @@ const stageAt = (t) => (t < 8 ? 'real estate' : t < 16 ? 'electronics' : 'clinic
   await page.goto('http://127.0.0.1:8099/index.html', { waitUntil: 'load' });
   await page.waitForTimeout(600);
 
-  // banner must fall back to its poster while banner.mp4 does not exist
+  // banner is a real ping-pong loop; verify it loaded without error
   const banner = await page.evaluate(() => {
     const v = document.getElementById('banner-film');
     return { src: v.getAttribute('src'), poster: v.getAttribute('poster'), err: v.error ? v.error.code : null };
   });
-  console.log(`banner: src=${banner.src} poster=${banner.poster} error=${banner.err} ` +
-    `(error expected until the clip is generated; poster carries it)`);
+  console.log(`banner: src=${banner.src} poster=${banner.poster} error=${banner.err}`);
+  if (banner.err) throw new Error(`banner media error ${banner.err}`);
 
   const act = await page.evaluate(() => {
     const a = document.getElementById('act');

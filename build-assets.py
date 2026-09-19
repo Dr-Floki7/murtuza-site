@@ -174,6 +174,14 @@ def build(ratio, out_name, scale):
 land_total, land_durs, land_mb = build("16x9", "scrub.mp4", "scale=1280:-2")
 port_total, port_durs, port_mb = build("9x16", "scrub-portrait.mp4", "scale=720:-2")
 
+# Phones do not need a 720x1280, 24fps all-intra stream. Their CSS viewport is
+# typically 360-430px wide and mobile decoders pay for every one of those pixels.
+# 540px at 18fps cuts decode work by ~58% while staying above display resolution.
+mobile_land_total, _, mobile_land_mb = build(
+    "16x9", "scrub-mobile-landscape.mp4", "fps=18,scale=540:-2")
+mobile_port_total, _, mobile_port_mb = build(
+    "9x16", "scrub-mobile.mp4", "fps=18,scale=540:-2")
+
 # ── banner loops ──────────────────────────────────────────────────────────
 INK = "0x0A0E14"          # must match --ink in index.html
 
@@ -295,5 +303,7 @@ for i, (stem, s, e) in enumerate(bounds):
     lo, hi = s + span * 0.16, e - span * 0.12
     print(f"  panel {i} ({stem:<12}): p >= {lo:.3f} && p < {hi:.3f}")
 
-print(f"\ntotal shipped video: {land_mb:.1f} MB + {port_mb:.1f} MB "
+print(f"\ndesktop/tablet shipped video: {land_mb:.1f} MB + {port_mb:.1f} MB "
+      f"(one per device, never both)")
+print(f"mobile shipped video: {mobile_land_mb:.1f} MB + {mobile_port_mb:.1f} MB "
       f"(one per device, never both)")

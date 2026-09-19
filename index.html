@@ -738,6 +738,15 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
 }
 .js .close.in .wrap{opacity:1;transform:none}
 
+/* On phones and coarse-pointer tablets, 700vh makes a 22-second film feel like the
+   page grabbed the user's thumb. 430vh keeps all six story beats but cuts the travel
+   from ~5064px to ~2785px on a 390x844 phone. Reduced-motion stays auto-height. */
+@media (prefers-reduced-motion:no-preference) and (max-width:48rem),
+       (prefers-reduced-motion:no-preference) and (pointer:coarse){
+  .act{height:430vh}
+  .panel{transition-duration:.24s}
+}
+
 /* ═══════════════════════════════════════════════════════════
    REDUCED MOTION — no scrub at all, every stage readable
    ═══════════════════════════════════════════════════════════ */
@@ -1340,10 +1349,25 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
   if (!reduced) {
     bannerFilm.src = window.innerHeight > window.innerWidth
       ? "banner-portrait.mp4" : "banner.mp4";
-    bannerFilm.addEventListener("loadeddata", function(){
+
+    /* Do not let the animated banner compete with the scrub film for the mobile
+       video decoder after it leaves the screen. Two simultaneous decoders was a
+       hidden tax on exactly the section the user reported as sticky. */
+    var bannerInView = true;
+    function syncBannerPlayback(){
+      if (!bannerInView) { bannerFilm.pause(); return; }
       var r = bannerFilm.play();
-      if (r && r.catch) r.catch(function(){});   // autoplay refused: poster stands in
-    });
+      if (r && r.catch) r.catch(function(){});   // refused: poster is complete
+    }
+    bannerFilm.addEventListener("loadeddata", syncBannerPlayback);
+
+    if ("IntersectionObserver" in window) {
+      var bannerObserver = new IntersectionObserver(function(entries){
+        bannerInView = entries[0].isIntersecting;
+        syncBannerPlayback();
+      }, { threshold:0.02 });
+      bannerObserver.observe(bannerFilm);
+    }
   }
 
   /* ── Banner reveal: beat one is the photograph alone, beat two writes the
@@ -1379,6 +1403,14 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
       copy.style.visibility = eased < 0.02 ? "hidden" : "visible";
       veil.style.opacity = String(eased);
       cue.style.opacity = String(1 - Math.min(1, t * 2.2));
+
+      /* Once fully revealed, this beat is one-way. Stop doing four style writes on
+         every later scroll event, including through the expensive film section. */
+      if (p >= 1) {
+        window.removeEventListener("scroll", frame);
+        window.removeEventListener("resize", frame);
+        window.removeEventListener("orientationchange", frame);
+      }
     }
 
     window.addEventListener("scroll", frame, { passive:true });
@@ -1394,9 +1426,14 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
 
   film.addEventListener("error", function(){ act.classList.remove("is-ready"); }, true);
 
-  /* Portrait viewports get the 9:16 cut. Chosen once, at load: swapping mid-session
-     would drop the buffer and restart the download for a rotation nobody asked to pay for. */
-  var CUT = window.innerHeight > window.innerWidth ? "scrub-portrait.mp4" : "scrub.mp4";
+  /* Small/coarse devices get a dedicated 540px, 18fps all-intra cut. The old
+     portrait file was 720x1280 at 24fps: 528 full-resolution frames and ~4Mbps.
+     Keeping that for larger touch devices buys no visible phone quality, only lag. */
+  var IS_MOBILE_SCRUB = window.matchMedia("(max-width:48rem), (pointer:coarse)").matches;
+  var IS_PORTRAIT = window.innerHeight > window.innerWidth;
+  var CUT = IS_MOBILE_SCRUB
+    ? (IS_PORTRAIT ? "scrub-mobile.mp4" : "scrub-mobile-landscape.mp4")
+    : (IS_PORTRAIT ? "scrub-portrait.mp4" : "scrub.mp4");
 
   /* ── Reduced motion: no scrubbing. Loop quietly, show every panel. ── */
   if (reduced) {
@@ -1506,19 +1543,33 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
   function onScroll(){
     var p = progress();
     paint(p);
-    if (ready && isFinite(film.duration) && film.duration > 0) {
-      target = p * film.duration;
-      if (!ticking) { ticking = true; requestAnimationFrame(tick); }
-    }
+    if (!ready || !isFinite(film.duration) || film.duration <= 0) return;
+
+    target = p * film.duration;
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(IS_MOBILE_SCRUB ? seekMobile : tick);
   }
 
+  /* Phones get exactly one seek per rendered scroll frame, always to the latest
+     target. The old desktop lerp kept scheduling seeks after the thumb stopped,
+     making the decoder chase stale frames and the page feel sticky. All source
+     frames are keyframes, so smoothing here is unnecessary. */
+  function seekMobile(){
+    ticking = false;
+    current = target;
+    try {
+      if (Math.abs(film.currentTime - current) > 0.015) film.currentTime = current;
+    } catch (e) { return; }
+    if (film.currentTime > 0.2) seekProven = true;
+  }
+
+  /* Desktop keeps the visual easing; its decoder has the headroom for it. */
   function tick(){
     current += (target - current) * 0.12;
     if (Math.abs(target - current) < 0.004) { current = target; ticking = false; }
     try { film.currentTime = current; }
     catch (e) { ticking = false; return; }
-    /* A seek that never lands means the decoder is still locked. Retry the unlock
-       once rather than leaving the film stuck on frame one. */
     if (!seekProven && current > 0.4 && film.currentTime < 0.1) unlock();
     else if (film.currentTime > 0.2) seekProven = true;
     if (ticking) requestAnimationFrame(tick);
