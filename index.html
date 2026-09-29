@@ -796,6 +796,7 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
    MOBILE NATIVE STORY — sequential playback, no frame seeking
    ═══════════════════════════════════════════════════════════ */
 .mobile-story{display:none}
+.mobile-interlude{display:none}
 @media (prefers-reduced-motion:no-preference) and (max-width:48rem),
        (prefers-reduced-motion:no-preference) and (pointer:coarse){
   .act{display:none}
@@ -808,6 +809,28 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
   .mobile-scene__copy .meta{display:block;color:var(--signal-lift);margin-bottom:var(--s-2)}
   .mobile-scene__copy h2{font-size:var(--t-lg);font-stretch:110%;font-weight:750;letter-spacing:-.03em;margin-bottom:var(--s-2)}
   .mobile-scene__copy p{font-size:var(--t-base);color:var(--on-ink-2);max-width:36ch}
+  .mobile-interlude{
+    min-height:55svh;display:grid;align-items:center;
+    background:var(--ink-lift);border-block:1px solid var(--rule-ink);
+  }
+  .mobile-interlude__copy{padding:var(--s-5) var(--gutter);max-width:42rem}
+  .mobile-interlude__copy .meta{display:block;color:var(--signal-lift);margin-bottom:var(--s-2)}
+  .mobile-interlude__copy h2{
+    font-size:var(--t-lg);font-stretch:110%;font-weight:750;
+    letter-spacing:-.03em;margin-bottom:var(--s-2);
+  }
+  .mobile-interlude__copy > p{color:var(--on-ink-2);max-width:38ch}
+  .mobile-interlude__proof{
+    margin-top:var(--s-3);padding-top:var(--s-3);
+    border-top:1px solid var(--rule-ink);
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s-2);
+  }
+  .mobile-interlude__proof li{display:grid;gap:.2rem}
+  .mobile-interlude__proof strong{
+    color:var(--on-ink);font-size:var(--t-md);font-weight:750;
+    font-variant-numeric:tabular-nums;
+  }
+  .mobile-interlude__proof span{color:var(--on-ink-2);font-size:var(--t-xs);line-height:1.3}
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1094,6 +1117,18 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
         <p>A family will think about this for nine months before they commit. My job is to be the reason they stop thinking and act.</p>
       </div>
     </article>
+    <article class="mobile-interlude">
+      <div class="mobile-interlude__copy">
+        <span class="meta">What that actually takes</span>
+        <h2>The launch is one day.</h2>
+        <p>Everything before it is nine months of work aimed at a date that cannot move. Six people, every channel, one deadline.</p>
+        <ul class="mobile-interlude__proof" aria-label="Real estate launch scope">
+          <li><strong>₹30 Cr+</strong><span>Annual budget</span></li>
+          <li><strong>6</strong><span>Team members</span></li>
+          <li><strong>5+</strong><span>Launches</span></li>
+        </ul>
+      </div>
+    </article>
     <article class="mobile-scene">
       <video class="mobile-scene__video" muted playsinline preload="none" poster="banner-portrait.jpg" data-src="story-electronics.mp4" aria-hidden="true"></video>
       <div class="mobile-scene__copy">
@@ -1102,12 +1137,35 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
         <p>A launch stops being a campaign when thirty stores open in a week and every one of them needs people through the door on day one.</p>
       </div>
     </article>
+    <article class="mobile-interlude">
+      <div class="mobile-interlude__copy">
+        <span class="meta">What retail teaches</span>
+        <h2>You learn to fix it live.</h2>
+        <p>None of it came from the plan. It came from reading the numbers daily and moving while the campaign was still live.</p>
+        <ul class="mobile-interlude__proof" aria-label="Consumer electronics results">
+          <li><strong>30</strong><span>Stores in 7 days</span></li>
+          <li><strong>−50%</strong><span>Cost per lead</span></li>
+          <li><strong>+26%</strong><span>Footfall</span></li>
+        </ul>
+      </div>
+    </article>
     <article class="mobile-scene">
       <video class="mobile-scene__video" muted playsinline preload="none" poster="banner-portrait.jpg" data-src="story-dental.mp4" aria-hidden="true"></video>
       <div class="mobile-scene__copy">
         <span class="meta">And before all of it</span>
         <h2>I started holding a drill.</h2>
         <p>Root canals, extractions, twenty community camps. Nobody has ever wanted to be in that chair.</p>
+      </div>
+    </article>
+    <article class="mobile-interlude">
+      <div class="mobile-interlude__copy">
+        <span class="meta">Which is the whole point</span>
+        <h2>That is where I learned demand.</h2>
+        <p>A patient in real pain will still put treatment off for months. Once you have sat across from that, no funnel surprises you.</p>
+        <ul class="mobile-interlude__proof" aria-label="Clinical experience">
+          <li><strong>5 yrs</strong><span>Clinical training</span></li>
+          <li><strong>20+</strong><span>Community camps</span></li>
+        </ul>
       </div>
     </article>
   </section>

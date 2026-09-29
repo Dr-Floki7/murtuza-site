@@ -16,6 +16,8 @@ const { chromium } = require('playwright');
     act: getComputedStyle(document.getElementById('act')).display,
     story: getComputedStyle(document.getElementById('mobile-story')).display,
     scenes: document.querySelectorAll('.mobile-scene').length,
+    interludes: document.querySelectorAll('.mobile-interlude').length,
+    beats: [...document.querySelectorAll('#mobile-story h2')].map((h) => h.textContent.trim()),
   }));
   console.log('mobile structure:', initial);
 
@@ -23,6 +25,8 @@ const { chromium } = require('playwright');
   if (initial.act !== 'none') fails.push('desktop scrub is still visible on mobile');
   if (initial.story !== 'block') fails.push('mobile story is not visible');
   if (initial.scenes !== 3) fails.push(`expected 3 scenes, got ${initial.scenes}`);
+  if (initial.interludes !== 3) fails.push(`expected 3 proof interludes, got ${initial.interludes}`);
+  if (initial.beats.length !== 6) fails.push(`expected 6 mobile beats, got ${initial.beats.length}`);
 
   const scenes = page.locator('.mobile-scene');
   for (let i = 0; i < 3; i++) {
