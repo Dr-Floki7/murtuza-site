@@ -93,16 +93,20 @@ for label, ok in checks:
 
 print("\nmotion hooks")
 for probe, label in (
-    ("reveal-lines", "heading wipes"),
-    ("data-words", "word reveals"),
+    ("reveal-lines", "heading reveals"),
+    ("data-words", "paragraph reveals"),
     ("data-stagger", "staggered items"),
-    ('class="ticker', "ticker"),
     ('pathLength="1"', "icon stroke draw"),
 ):
     n = s.count(probe)
     print(f"  {n:>3}x  {label}")
     if n == 0:
         fails.append(f"motion hook missing: {label}")
+
+marquee = 'class="ticker' in s or "ticker-slide" in s
+print(f"  {'FAIL' if marquee else 'ok  '} decorative marquee removed")
+if marquee:
+    fails.append("decorative marquee still present")
 
 print()
 if fails:
