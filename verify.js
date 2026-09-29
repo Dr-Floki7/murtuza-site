@@ -183,7 +183,7 @@ const SHORT = [
 
     // primary CTA present and tappable in the closing band
     await page.evaluate(() => {
-      document.getElementById('contact').scrollIntoView({ behavior: 'instant', block: 'center' });
+      document.querySelector('#contact a[download]').scrollIntoView({ behavior: 'instant', block: 'center' });
     });
     await new Promise((res) => setTimeout(res, 200));
     r.ctaVisible = await page.evaluate(() => {

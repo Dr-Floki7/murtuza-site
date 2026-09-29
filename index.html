@@ -165,7 +165,7 @@
 
 *,*::before,*::after{box-sizing:border-box}
 html,body{margin:0;padding:0}
-html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+html{-webkit-text-size-adjust:100%;scroll-behavior:auto}
 
 body{
   background:var(--paper);
@@ -212,6 +212,35 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
   padding:.85rem 1.25rem;font-size:var(--t-sm);font-weight:600;text-decoration:none;
 }
 .skip:focus{top:1rem}
+
+.site-nav{
+  position:sticky;top:0;z-index:50;
+  min-height:3.75rem;
+  display:flex;align-items:center;
+  background:rgba(10,14,20,.96);
+  border-bottom:1px solid var(--rule-ink);
+  color:var(--on-ink);
+}
+.site-nav__inner{
+  width:100%;max-width:var(--maxw);margin-inline:auto;padding-inline:var(--gutter);
+  display:flex;align-items:center;justify-content:space-between;gap:var(--s-3);
+}
+.site-nav__brand{min-height:44px;display:inline-flex;align-items:center;font-weight:700;text-decoration:none;white-space:nowrap}
+.site-nav__links{display:flex;align-items:center;gap:clamp(.85rem,2.4vw,2rem)}
+.site-nav__links a{
+  min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;
+  color:var(--on-ink-2);font-size:var(--t-sm);font-weight:600;text-decoration:none;
+}
+.site-nav__links a:hover,.site-nav__links a:focus-visible{color:var(--on-ink)}
+.site-nav__links .site-nav__cv{color:var(--signal-lift)}
+#experience,#capabilities,#contact{scroll-margin-top:4.25rem}
+
+@media (max-width:34rem){
+  .site-nav__brand{display:none}
+  .site-nav__inner{justify-content:center}
+  .site-nav__links{width:100%;justify-content:space-between;gap:.5rem}
+  .site-nav__links a{font-size:.8125rem}
+}
 
 .display{
   font-stretch:116%;font-weight:800;
@@ -927,6 +956,18 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
   </div>
 </header>
 
+<nav class="site-nav" aria-label="Portfolio sections">
+  <div class="site-nav__inner">
+    <a class="site-nav__brand" href="#banner">Murtuza Bharmal</a>
+    <div class="site-nav__links">
+      <a href="#experience">Experience</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#contact">Contact</a>
+      <a class="site-nav__cv" href="Murtuza_Bharmal_Resume_HT.pdf" download>CV ↓</a>
+    </div>
+  </div>
+</nav>
+
 <!-- ═══════════════════════════════════════════════════════ -->
 <main id="main">
 
@@ -1071,7 +1112,7 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
     </article>
   </section>
 
-  <section class="sheet on-paper" aria-labelledby="arc-h" data-track="experience">
+  <section class="sheet on-paper" id="experience" aria-labelledby="arc-h" data-track="experience">
     <div class="wrap">
       <h2 class="lead reveal-lines" id="arc-h">The detail.</h2>
       <p class="lead-body" data-words>
@@ -1159,7 +1200,7 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
     </div>
   </section>
 
-  <section class="sheet on-paper" aria-labelledby="cap-h" data-track="skills">
+  <section class="sheet on-paper" id="capabilities" aria-labelledby="cap-h" data-track="skills">
     <div class="wrap">
       <h2 class="lead reveal-lines" id="cap-h">What I do.</h2>
       <p class="lead-body" data-words>
