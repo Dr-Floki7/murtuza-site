@@ -246,7 +246,7 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
    on over the same image, and the veil below darkens only as far as the text needs. */
 .banner{
   position:relative;
-  height:200vh;
+  height:150vh;
   background:var(--ink);
 }
 .banner__stage{
@@ -291,11 +291,27 @@ html{caret-color:var(--signal);scrollbar-color:var(--signal) var(--paper);scroll
     calc(var(--s-4) + env(safe-area-inset-bottom));
 }
 .mark{
+  position:absolute;
+  top:calc(var(--s-3) + env(safe-area-inset-top));
+  left:var(--gutter);right:calc(var(--gutter) + 6rem);
+  width:auto;max-width:none;
   font-stretch:88%;font-weight:650;
   font-size:var(--t-base);letter-spacing:.03em;
   color:var(--on-ink);
 }
 .mark span{color:var(--on-ink-2)}
+.banner__quick-cv{
+  position:absolute;
+  top:calc(var(--s-3) + env(safe-area-inset-top));
+  right:var(--gutter);
+  min-width:4.5rem;min-height:2.75rem;
+  display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid rgba(242,244,247,.35);
+  color:var(--on-ink);background:rgba(10,14,20,.36);
+  padding:.55rem .9rem;text-decoration:none;
+  font-size:var(--t-sm);font-weight:650;
+}
+.banner__quick-cv:hover{background:var(--signal);border-color:var(--signal)}
 
 .banner__body{grid-row:3;max-width:min(52rem,100%)}
 /* Hidden only when JS is there to reveal it. Without JS the copy simply shows. */
@@ -806,7 +822,7 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
    therefore has a hard height budget: overflow it and the headline climbs back onto
    the faces, which is exactly what it must not do. */
 @media (max-width:34rem) and (orientation:portrait){
-  .banner{height:180vh}
+  .banner{height:145vh}
   .display{font-size:clamp(2rem,8.6vw,2.75rem)}
   .banner h1{max-width:18ch;margin-bottom:var(--s-2)}
   .banner__sub{
@@ -817,8 +833,8 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
   .banner__body .actions{gap:.5rem}
   .banner__body .btn{flex:1 1 auto;min-width:calc(50% - .25rem);padding-inline:1rem}
   .banner__body .btn:first-child{flex-basis:100%}
-  /* the role suffix wraps awkwardly at this width and adds nothing */
-  .mark span{display:none}
+  /* keep the professional proposition visible before the visitor agrees to scroll */
+  .mark span{display:block;margin-top:.15rem;font-size:var(--t-sm);letter-spacing:0}
   .scrollcue__pill{padding-left:.95rem}
 }
 
@@ -864,9 +880,10 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
 
     <div class="banner__ui">
       <p class="mark">Murtuza Bharmal <span>· GTM &amp; Product Marketing</span></p>
+      <a class="banner__quick-cv" href="Murtuza_Bharmal_Resume_HT.pdf" download aria-label="Download Murtuza Bharmal's CV">CV ↓</a>
 
       <div class="banner__body" id="banner-copy">
-        <h1 class="display">From root canals<em>to ₹500 Cr launches.</em></h1>
+        <h1 class="display">From root canals <em>to ₹500 Cr launches.</em></h1>
         <p class="banner__sub">
           I trained as a dentist, then spent five years learning how to put products
           in front of people. Go-to-market, now pointed at healthtech.
