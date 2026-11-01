@@ -20,6 +20,28 @@
      Vercel, so it 404s harmlessly during local development. -->
 <script defer src="/_vercel/insights/script.js"></script>
 
+<!-- Google Analytics 4 (property murtuzabharmal.com). Unlike Vercel Analytics it sets
+     first-party cookies (_ga). ponytail: there is no consent banner, so visitors in the
+     EEA, UK and Switzerland default to analytics_storage "denied" (cookieless pings,
+     no cookies). Everyone else is measured normally. If those visitors matter, add a
+     banner that calls gtag('consent','update',{analytics_storage:'granted'}). -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-PX9K5S5JZ5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag("consent", "default", {
+    ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied",
+    analytics_storage: "denied",
+    region: ["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IS","IE","IT","LV","LI","LT","LU","MT","NL","NO","PL","PT","RO","SK","SI","ES","SE","GB","CH"]
+  });
+  gtag("consent", "default", {
+    ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied",
+    analytics_storage: "granted"
+  });
+  gtag("js", new Date());
+  gtag("config", "G-PX9K5S5JZ5");
+</script>
+
 <meta property="og:type" content="profile">
 <meta property="og:url" content="https://murtuzabharmal.com/">
 <meta property="og:site_name" content="Murtuza Bharmal">
@@ -1757,8 +1779,8 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
    ENGAGEMENT INSTRUMENTATION
 
    Which sections hold attention, how deep into the film people get, and
-   whether they reach the CV. Vercel Web Analytics is cookieless and stores
-   no personal data, so there is nothing here needing a consent banner.
+   whether they reach the CV. Every event goes to both Vercel Web Analytics
+   (cookieless) and GA4 (see the consent defaults in <head>).
 
    Hobby allows 50K events/month. Conversions fire immediately because they
    are rare and matter; everything else is batched into ONE summary event at
@@ -1769,6 +1791,7 @@ footer{background:var(--ink);color:var(--on-ink-2);padding-block:var(--s-4) calc
 
   function send(name, data){
     if (typeof window.va === "function") window.va("event", { name: name, data: data });
+    if (typeof window.gtag === "function") window.gtag("event", name, data);
   }
 
   /* Conversions: the whole point of the page. */

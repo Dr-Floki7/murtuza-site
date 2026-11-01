@@ -75,6 +75,12 @@ evaluated only once and is unevenly supported.
 Vercel Web Analytics: cookieless, ~1KB, no consent banner required. Hobby includes 50K
 events/month and pauses collection rather than billing when exceeded.
 
+Google Analytics 4: property `murtuzabharmal.com`, Measurement ID `G-PX9K5S5JZ5`, in the
+"Murtuza Bharmal" Analytics account. It sets `_ga` cookies. There is no consent banner, so consent
+mode defaults `analytics_storage` to denied for the EEA, UK and Switzerland (cookieless pings only)
+and to granted everywhere else. Ad storage is denied everywhere. The same events below go to both
+tools through one `send()` helper.
+
 Conversions (`cv_download`, `email_click`, `linkedin_click`) fire immediately. Everything else is
 batched into a single `visit_summary` event at end of visit, so a visit costs roughly two events
 rather than a dozen. The summary reports which section held attention longest, total engaged time,
