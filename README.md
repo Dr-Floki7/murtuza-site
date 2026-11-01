@@ -31,7 +31,7 @@ panels render as a static stack.
 
 ## Live
 
-**https://murtuza-bharmal.vercel.app**
+**https://murtuzabharmal.com**
 
 Verify a deploy with `python live-check.py`. It checks page *content*, not status codes: a Vercel
 login wall returns 200 for every path, including files that do not exist, so status codes alone

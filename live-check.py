@@ -8,7 +8,7 @@ path including files that do not exist, so status codes alone prove nothing.
 import sys, urllib.request, urllib.error, re
 
 sys.stdout.reconfigure(encoding="utf8")
-BASE = (sys.argv[1] if len(sys.argv) > 1 else "https://murtuza-bharmal.vercel.app").rstrip("/")
+BASE = (sys.argv[1] if len(sys.argv) > 1 else "https://murtuzabharmal.com").rstrip("/")
 UA = {"User-Agent": "Mozilla/5.0 (compatible; deploy-check)"}
 fails = []
 
@@ -59,7 +59,7 @@ for label, probe in (
 
 canon = re.search(r'rel="canonical" href="([^"]+)"', html)
 print(f"  canonical: {canon.group(1) if canon else 'MISSING'}")
-if not canon or "murtuza-bharmal.vercel.app" not in canon.group(1):
+if not canon or "murtuzabharmal.com" not in canon.group(1):
     fails.append("canonical wrong")
 
 # ── assets ───────────────────────────────────────────────────────────
