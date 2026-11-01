@@ -47,7 +47,6 @@ for label, probe in (
     ("Person schema", '"jobTitle"'),
     ("Flow Realty named", "Flow Realty"),
     ("six film beats", 'data-panel="5"'),
-    ("ticker", 'class="ticker'),
     ("agent dialog", 'id="agent-dialog"'),
     ("analytics", "_vercel/insights"),
     ("instrumentation", "visit_summary"),

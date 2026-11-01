@@ -3,19 +3,19 @@
   "trailingSlash": false,
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/:path(.*)",
       "has": [{ "type": "host", "value": "www.murtuzabharmal.com" }],
       "destination": "https://murtuzabharmal.com/:path*",
       "permanent": true
     },
     {
-      "source": "/:path*",
+      "source": "/:path(.*)",
       "has": [{ "type": "host", "value": "murtuza-bharmal.vercel.app" }],
       "destination": "https://murtuzabharmal.com/:path*",
       "permanent": true
     },
     {
-      "source": "/:path*",
+      "source": "/:path(.*)",
       "has": [{ "type": "host", "value": "murtuza-five.vercel.app" }],
       "destination": "https://murtuzabharmal.com/:path*",
       "permanent": true
